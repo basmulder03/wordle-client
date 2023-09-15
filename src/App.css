@@ -16,3 +16,18 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.fab_reset {
+  position: fixed;
+  top: 0;
+  left: 0;
+  text-decoration: underline;
+}
+
+.fab_show_answer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  text-decoration: underline;
+}
+

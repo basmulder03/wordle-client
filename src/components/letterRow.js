@@ -2,6 +2,8 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import LetterSquare from "./letterSquare";
 import './letterRow.css';
 import { checkIfWordValid } from "../words";
+import letterBeeps from "../sounds/mixkit-censorship-beep-1082.wav";
+import wrongAnswerBuzzer from "../sounds/Wrong-answer-sound-effect.mp3";
 
 const COLOR_MAPPER = {
     DEFAULT: "aqua",
@@ -16,7 +18,6 @@ const delayTime = (time) => new Promise(resolve => setTimeout(() => resolve(), t
 const word_length = 5;
 
 const LetterRow = forwardRef(({word, currentWord, handleWord, active}, ref) => {
-
    const [wordState, setWordState] = useState([]); 
 
    const enterPressed = async () => {
@@ -26,6 +27,7 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active}, ref) => {
         handleWord(word);
       }
       else {
+        new Audio(wrongAnswerBuzzer).play()
         const localWordState = [...wordState];
         for (const element of localWordState) {
           element.color = COLOR_MAPPER.INVALID;
@@ -62,13 +64,14 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active}, ref) => {
       for (let i = 0; i < localWordState.length; i++) {
         await updateStateAtIndex(localWordState, i);
       }
-    } else {
-      setWordState(localWordState)
+      new Audio(letterBeeps).play()
     }
+    setWordState(localWordState)
    }
 
    const updateStateAtIndex = async (newState, index) => {
       const currentState = [...wordState];
+      new Audio(letterBeeps).play()
       await delayTime(200);
       for (let i = 0; i <= index; i++) {
         currentState[i] = newState[i];
