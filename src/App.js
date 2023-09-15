@@ -124,7 +124,7 @@ function App() {
     setAttempts([]);
     setLastAttempt("");
     setCurrentWord(getRandomWord());
-    setAllLetters(alphabet);
+    setAllLetters([...alphabet]);
   }
 
   const showAnswer = () => {
