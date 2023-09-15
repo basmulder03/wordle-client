@@ -5,26 +5,19 @@ import { checkIfWordValid } from "../words";
 import letterBeeps from "../sounds/mixkit-censorship-beep-1082.wav";
 import wrongAnswerBuzzer from "../sounds/Wrong-answer-sound-effect.mp3";
 
-const COLOR_MAPPER = {
-    DEFAULT: "aqua",
-    CORRECT_LETTER: "yellow",
-    CORRECT_POSITION: "green",
-    INVALID: "red"
-}
-
 const delayTime = (time) => new Promise(resolve => setTimeout(() => resolve(), time))
 
 
 const word_length = 5;
 
-const LetterRow = forwardRef(({word, currentWord, handleWord, active}, ref) => {
+const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}, ref) => {
    const [wordState, setWordState] = useState([]); 
 
    const enterPressed = async () => {
     if (word.length === 5) {
       if (checkIfWordValid(word)) {
-        await checkWord();
-        handleWord(word);
+        const localWordState = await checkWord();
+        handleWord(word, localWordState);
       }
       else {
         new Audio(wrongAnswerBuzzer).play()
@@ -67,6 +60,7 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active}, ref) => {
       new Audio(letterBeeps).play()
     }
     setWordState(localWordState)
+    return localWordState;
    }
 
    const updateStateAtIndex = async (newState, index) => {
@@ -111,11 +105,19 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active}, ref) => {
 
   return (
     <div className="row">
+      <LetterSquare letter={`${index}.`} background="beige" selected={false} />
       {
         wordState.map(ws => <LetterSquare key={ws.key} letter={ws.letter} background={ws.color} selected={ws.selected} />)
       }
     </div>
   );
 });
+
+export const COLOR_MAPPER = {
+  DEFAULT: "aqua",
+  CORRECT_LETTER: "yellow",
+  CORRECT_POSITION: "green",
+  INVALID: "red"
+}
 
 export default LetterRow;

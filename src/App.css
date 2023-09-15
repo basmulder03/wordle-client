@@ -12,9 +12,14 @@ body {
   padding: 0;
   margin: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+.letters {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .fab_reset {
