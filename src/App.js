@@ -145,7 +145,7 @@ function App() {
         {
           allLetters.map(char => (
             <div key={char.letter} className="cell">
-              <LetterSquare letter={char.letter} background={char.color} selected={char.active} />
+              <LetterSquare letter={char.letter} background={char.color} selected={char.active} selectedColor={char.active ? "blue" : "none"} />
             </div>
             )
           )
