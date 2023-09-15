@@ -99,11 +99,11 @@ function App() {
             break;
           case COLOR_MAPPER.CORRECT_LETTER:
             allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_LETTER;
-            allLetterLocal[charIndex].active = true;
+            allLetterLocal[charIndex].active = false;
             break;
           case COLOR_MAPPER.CORRECT_POSITION:
             allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_POSITION;
-            allLetterLocal[charIndex].active = true;
+            allLetterLocal[charIndex].active = false;
             break;
           default:
             console.log(letter.color)
