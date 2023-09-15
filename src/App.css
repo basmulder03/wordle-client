@@ -36,3 +36,10 @@ body {
   text-decoration: underline;
 }
 
+.line {
+  height: 100vh;
+  width: 5px;
+  background-color: blue;
+  margin: 0 20px;
+}
+

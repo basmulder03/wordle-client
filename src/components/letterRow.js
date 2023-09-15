@@ -5,16 +5,16 @@ import { checkIfWordValid } from "../words";
 import letterBeeps from "../sounds/mixkit-censorship-beep-1082.wav";
 import wrongAnswerBuzzer from "../sounds/Wrong-answer-sound-effect.mp3";
 
-const delayTime = (time) => new Promise(resolve => setTimeout(() => resolve(), time))
+export const delayTime = (time) => new Promise(resolve => setTimeout(() => resolve(), time))
 
 
-const word_length = 5;
+export const word_length = 5;
 
 const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}, ref) => {
    const [wordState, setWordState] = useState([]); 
 
    const enterPressed = async () => {
-    if (word.length === 5) {
+    if (word.length === word_length) {
       if (checkIfWordValid(word)) {
         const localWordState = await checkWord();
         handleWord(word, localWordState);
@@ -39,7 +39,8 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}
         key: i,
         letter: word[i],
         color: letters[i] === word[i] ? COLOR_MAPPER.CORRECT_POSITION : COLOR_MAPPER.DEFAULT,
-        selected: false
+        selected: false,
+        selectedColor: COLOR_MAPPER.DEFAULT
       };
       if (letters[i] === word[i]) {
         availableLetters.splice(availableLetters.indexOf(word[i]), 1)
@@ -59,6 +60,7 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}
       }
       new Audio(letterBeeps).play()
     }
+    localWordState[localWordState.length - 1].selected = false;
     setWordState(localWordState)
     return localWordState;
    }
@@ -72,6 +74,7 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}
         currentState[i].selected = false;
       }
       currentState[index].selected = true;
+      currentState[index].selectedColor = currentState[index].color;
       setWordState(currentState);
    }
 
@@ -105,9 +108,9 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}
 
   return (
     <div className="row">
-      <LetterSquare letter={`${index}.`} background="beige" selected={false} />
+      <LetterSquare letter={`${index}.`} background={COLOR_MAPPER.BACKGROUND} selected={false} />
       {
-        wordState.map(ws => <LetterSquare key={ws.key} letter={ws.letter} background={ws.color} selected={ws.selected} />)
+        wordState.map(ws => <LetterSquare key={ws.key} letter={ws.letter} background={ws.color} selected={ws.selected} selectedColor={ws.selectedColor} />)
       }
     </div>
   );
@@ -117,7 +120,8 @@ export const COLOR_MAPPER = {
   DEFAULT: "aqua",
   CORRECT_LETTER: "yellow",
   CORRECT_POSITION: "green",
-  INVALID: "red"
+  INVALID: "red",
+  BACKGROUND: "beige"
 }
 
 export default LetterRow;
