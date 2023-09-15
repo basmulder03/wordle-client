@@ -39,7 +39,7 @@ function App() {
   const [lastAttempt, setLastAttempt] = useState("");
   const [currentWord, setCurrentWord] = useState("");
   const [giveUp, setGiveUp] = useState("")
-  const [allLetters, setAllLetters] = useState(alphabet)
+  const [allLetters, setAllLetters] = useState([...alphabet])
 
   const childRef = useRef();
 
@@ -94,7 +94,7 @@ function App() {
         const charIndex = allLetterLocal.findIndex(e => e.letter === letter.letter);
         switch (letter.color) {
           case COLOR_MAPPER.DEFAULT:
-            allLetterLocal[charIndex].color = 'beige';
+            allLetterLocal[charIndex].color = 'black';
             allLetterLocal[charIndex].active = false;
             break;
           case COLOR_MAPPER.CORRECT_LETTER:
