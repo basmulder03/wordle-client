@@ -76,7 +76,7 @@ function App() {
 
   const showAnswer = () => {
     setGiveUp(currentWord)
-    // resetGame();
+    resetGame();
   }
 
   return (
