@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/wordle-client/static/css/main.f24c2015.css",
+    "main.js": "/wordle-client/static/js/main.d9690c8d.js",
+    "static/js/787.6044979f.chunk.js": "/wordle-client/static/js/787.6044979f.chunk.js",
+    "static/media/lingo-goed-word.wav": "/wordle-client/static/media/lingo-goed-word.66c4b04cb91dbb64f359.wav",
+    "static/media/HelveticaNeue.otf": "/wordle-client/static/media/HelveticaNeue.4291b351b26f2740898f.otf",
+    "static/media/mixkit-censorship-beep-1082.wav": "/wordle-client/static/media/mixkit-censorship-beep-1082.4a3f5e0e9f62eb45bc88.wav",
+    "static/media/Wrong-answer-sound-effect.mp3": "/wordle-client/static/media/Wrong-answer-sound-effect.493cc9f458f4882b9951.mp3",
+    "index.html": "/wordle-client/index.html",
+    "main.f24c2015.css.map": "/wordle-client/static/css/main.f24c2015.css.map",
+    "main.d9690c8d.js.map": "/wordle-client/static/js/main.d9690c8d.js.map",
+    "787.6044979f.chunk.js.map": "/wordle-client/static/js/787.6044979f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f24c2015.css",
+    "static/js/main.d9690c8d.js"
+  ]
+}
