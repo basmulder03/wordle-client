@@ -81,7 +81,6 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1,
    }))
 
   useEffect(() => {
-    console.log(word)
       if (word.length <= wordLength) { 
           const newWordState = [];
           for (let i = 0; i < word.length; i++) {

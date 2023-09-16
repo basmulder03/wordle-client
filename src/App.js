@@ -7,32 +7,32 @@ import LetterSquare from './components/letterSquare';
 import {words} from "./chosen_words";
 
 const alphabet = [
-  { letter: "a", active: true, color: 'beige' },
-  { letter: "b", active: true, color: 'beige' },
-  { letter: "c", active: true, color: 'beige' },
-  { letter: "d", active: true, color: 'beige' },
-  { letter: "e", active: true, color: 'beige' },
-  { letter: "f", active: true, color: 'beige' },
-  { letter: "g", active: true, color: 'beige' },
-  { letter: "h", active: true, color: 'beige' },
-  { letter: "i", active: true, color: 'beige' },
-  { letter: "j", active: true, color: 'beige' },
-  { letter: "k", active: true, color: 'beige' },
-  { letter: "l", active: true, color: 'beige' },
-  { letter: "m", active: true, color: 'beige' },
-  { letter: "n", active: true, color: 'beige' },
-  { letter: "o", active: true, color: 'beige' },
-  { letter: "p", active: true, color: 'beige' },
-  { letter: "q", active: true, color: 'beige' },
-  { letter: "r", active: true, color: 'beige' },
-  { letter: "s", active: true, color: 'beige' },
-  { letter: "t", active: true, color: 'beige' },
-  { letter: "u", active: true, color: 'beige' },
-  { letter: "v", active: true, color: 'beige' },
-  { letter: "w", active: true, color: 'beige' },
-  { letter: "x", active: true, color: 'beige' },
-  { letter: "y", active: true, color: 'beige' },
-  { letter: "z", active: true, color: 'beige' }
+  { letter: "a", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "b", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "c", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "d", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "e", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "f", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "g", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "h", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "i", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "j", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "k", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "l", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "m", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "n", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "o", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "p", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "q", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "r", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "s", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "t", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "u", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "v", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "w", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "x", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "y", active: true, color: COLOR_MAPPER.BACKGROUND },
+  { letter: "z", active: true, color: COLOR_MAPPER.BACKGROUND }
 ];
 
 function App() {
@@ -42,6 +42,7 @@ function App() {
   const [giveUp, setGiveUp] = useState("")
   const [allLetters, setAllLetters] = useState([...alphabet])
   const [wordLength, setWordLength] = useState(5);
+
 
   const childRef = useRef();
 
@@ -110,6 +111,7 @@ function App() {
     } 
     if (currentWord === word) {
       new Audio(goodAnswerLingo).play();
+      setTimeout(resetGame, 5000)
     } else {
       setLastAttempt("")
       const newList = [...attempts];
@@ -124,11 +126,17 @@ function App() {
   }
 
   const resetGame = async () => {
-    await delayTime(5000)
-    setAttempts([]);
-    setLastAttempt("");
-    setCurrentWord(getRandomWord(wordLength));
+    await delayTime(500)
     setAllLetters([...alphabet]);
+    await delayTime(500)
+    setAttempts([]);
+    await delayTime(500)
+    setLastAttempt("");
+    await delayTime(500)
+    setCurrentWord(getRandomWord(wordLength));
+    await delayTime(500)
+    setAllLetters([...alphabet])
+    await delayTime(500)
   }
 
   const showAnswer = () => {
@@ -165,7 +173,7 @@ function App() {
         {
           allLetters.map(char => (
             <div key={char.letter} className="cell">
-              <LetterSquare letter={char.letter} background={char.color} selected={char.active} selectedColor={char.active ? "blue" : "none"} disabled={!char.active && char.color === 'beige'} />
+              <LetterSquare letter={char.letter} background={char.color} selected={char.active} selectedColor={char.active ? "blue" : "none"} disabled={!char.active && char.color === COLOR_MAPPER.BACKGROUND} />
             </div>
           )
           )
