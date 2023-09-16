@@ -33,7 +33,7 @@ def write_file(filename, filename_to):
                     words[len(word)] = []
                 words[len(word)].append(word)
     j = json.dumps(words, indent=4)
-    text = "const words = " + j + "\n\n\n\n";
+    text = "export const words = " + j + "\n\n\n\n";
     text += "export const checkIfWordValid = (word) => words[word.length].includes(word);\n\nexport const getRandomWord = (len) => words[len][Math.floor(Math.random()*words[len].length)];"
     with open(filename_to, 'w') as t:
         t.write(text);        

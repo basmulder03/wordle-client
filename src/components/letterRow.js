@@ -8,13 +8,11 @@ import wrongAnswerBuzzer from "../sounds/Wrong-answer-sound-effect.mp3";
 export const delayTime = (time) => new Promise(resolve => setTimeout(() => resolve(), time))
 
 
-export const word_length = 5;
-
-const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}, ref) => {
+const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1, wordLength = 5}, ref) => {
    const [wordState, setWordState] = useState([]); 
 
    const enterPressed = async () => {
-    if (word.length === word_length) {
+    if (word.length === wordLength) {
       if (checkIfWordValid(word)) {
         const localWordState = await checkWord();
         handleWord(word, localWordState);
@@ -83,7 +81,8 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}
    }))
 
   useEffect(() => {
-      if (word.length <= word_length) { 
+    console.log(word)
+      if (word.length <= wordLength) { 
           const newWordState = [];
           for (let i = 0; i < word.length; i++) {
               newWordState.push({
@@ -93,7 +92,7 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}
                   selected: false
               })
           }
-          for (let i = word.length; i < word_length; i++) {
+          for (let i = word.length; i < wordLength; i++) {
               newWordState.push({
                   key: i,
                   letter: "",
@@ -108,7 +107,8 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1}
 
   return (
     <div className="row">
-      <LetterSquare letter={`${index}.`} background={COLOR_MAPPER.BACKGROUND} selected={false} />
+      <LetterSquare letter="" background={COLOR_MAPPER.BACKGROUND} selected={false} noShadow />
+      <LetterSquare letter={`${index}.`} background={COLOR_MAPPER.DISABLED} selected={false} />
       {
         wordState.map(ws => <LetterSquare key={ws.key} letter={ws.letter} background={ws.color} selected={ws.selected} selectedColor={ws.selectedColor} />)
       }
@@ -121,7 +121,8 @@ export const COLOR_MAPPER = {
   CORRECT_LETTER: "yellow",
   CORRECT_POSITION: "green",
   INVALID: "red",
-  BACKGROUND: "beige"
+  BACKGROUND: "beige",
+  DISABLED: "aquamarine"
 }
 
 export default LetterRow;
