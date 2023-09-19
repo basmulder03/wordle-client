@@ -62,8 +62,7 @@ const Alphabet = forwardRef((props, ref) => {
     }
 
     const resetAlphabet = () => {
-        setAllLetters([...alphabet]);
-        console.warn('reset');
+        setAllLetters(JSON.parse(JSON.stringify([...alphabet])));
     }
 
     useImperativeHandle(ref, () => ({

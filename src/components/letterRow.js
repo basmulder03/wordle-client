@@ -102,7 +102,7 @@ const LetterRow = forwardRef(({word, currentWord, handleWord, active, index = 1,
           setWordState(newWordState);
       }
       if (!active) checkWord();
-    }, [word])
+    }, [word, currentWord])
 
   return (
     <div className="row">

@@ -58,8 +58,8 @@ function App() {
 
 
   const handleWord = (word, result) => {
+    alphabetRef.current.handleWord(result);
     if (currentWord === word) {
-      alphabetRef.current.resetAlphabet();
       new Audio(goodAnswerLingo).play();
       setTimeout(resetGame, 5000)
     } else {
@@ -68,7 +68,6 @@ function App() {
       newList.push(word);
       setAttempts(newList);
       setGiveUp("")
-      alphabetRef.current.handleWord(result);
     }
   }
 
@@ -76,7 +75,7 @@ function App() {
     if (!currentWord) setCurrentWord(getRandomWord(wordLength));
   }
 
-  const resetGame = async () => {
+  const resetGame = () => {
     alphabetRef.current.resetAlphabet();
     setAttempts([]);
     setLastAttempt("");
@@ -91,10 +90,18 @@ function App() {
     }
   }
 
-  const changeWordLength = async (l) => {
-    const len = Number(l);
+  const removeShownAnser = () => {
+    setGiveUp("");
+  }
+
+  const changeWordLength = async (t) => {
+    const len = Number(t.value);
+    t.blur();
     setWordLength(len);
-    await delayTime(1000)
+    setAttempts([]);
+    setLastAttempt("");
+    setCurrentWord(getRandomWord(len))
+    alphabetRef.current.resetAlphabet();
   }
 
   return (
@@ -103,11 +110,11 @@ function App() {
       <div className="fab_show_answer">
         <span onClick={showAnswer}>Give Up</span><br />
         {
-          (giveUp.length) ? giveUp : null
+          (giveUp.length) ? <span onClick={removeShownAnser}>{giveUp}</span> : null
         }
       </div>
       <div className="fab_select_length">
-        <select onChange={(event) => changeWordLength(event.target.value)} value={wordLength}>
+        <select onChange={(event) => changeWordLength(event.target)} value={wordLength}>
           {
             Object.keys(words).map(w => <option key={w} value={w}>Word with {w} letter{w > 1 ? 's' : null} ({words[w].length} possibilities)</option>)
           }
