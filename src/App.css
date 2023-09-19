@@ -17,11 +17,6 @@ body {
   justify-content: center;
 }
 
-.letters {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-}
-
 .fab_reset {
   position: fixed;
   top: 0;

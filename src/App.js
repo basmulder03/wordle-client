@@ -5,46 +5,18 @@ import { getRandomWord } from './chosen_words';
 import goodAnswerLingo from "./sounds/lingo-goed-word.wav";
 import LetterSquare from './components/letterSquare';
 import {words} from "./chosen_words";
-
-const alphabet = [
-  { letter: "a", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "b", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "c", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "d", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "e", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "f", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "g", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "h", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "i", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "j", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "k", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "l", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "m", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "n", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "o", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "p", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "q", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "r", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "s", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "t", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "u", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "v", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "w", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "x", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "y", active: true, color: COLOR_MAPPER.BACKGROUND },
-  { letter: "z", active: true, color: COLOR_MAPPER.BACKGROUND }
-];
+import Alphabet from './components/alphabet';
 
 function App() {
   const [attempts, setAttempts] = useState([]);
   const [lastAttempt, setLastAttempt] = useState("");
   const [currentWord, setCurrentWord] = useState("");
   const [giveUp, setGiveUp] = useState("")
-  const [allLetters, setAllLetters] = useState([...alphabet])
   const [wordLength, setWordLength] = useState(5);
 
 
   const childRef = useRef();
+  const alphabetRef = useRef();
 
   const handleInput = (event) => {
     if (event.key === 'Enter') {
@@ -86,30 +58,8 @@ function App() {
 
 
   const handleWord = (word, result) => {
-      const allLetterLocal = [...allLetters];
-      for (const letter of result) {
-        const charIndex = allLetterLocal.findIndex(e => e.letter === letter.letter);
-          switch (letter.color) {
-            case COLOR_MAPPER.DEFAULT:
-              if (allLetterLocal[charIndex].color === COLOR_MAPPER.BACKGROUND) {
-                allLetterLocal[charIndex].color = COLOR_MAPPER.BACKGROUND;
-                allLetterLocal[charIndex].active = false;
-              }
-              break;
-            case COLOR_MAPPER.CORRECT_LETTER:
-              allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_LETTER;
-              allLetterLocal[charIndex].active = false;
-              break;
-            case COLOR_MAPPER.CORRECT_POSITION:
-              allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_POSITION;
-              allLetterLocal[charIndex].active = false;
-              break;
-            default:
-              console.log(letter.color)
-          }
-      setAllLetters(allLetterLocal);
-    } 
     if (currentWord === word) {
+      alphabetRef.current.resetAlphabet();
       new Audio(goodAnswerLingo).play();
       setTimeout(resetGame, 5000)
     } else {
@@ -118,6 +68,7 @@ function App() {
       newList.push(word);
       setAttempts(newList);
       setGiveUp("")
+      alphabetRef.current.handleWord(result);
     }
   }
 
@@ -126,17 +77,10 @@ function App() {
   }
 
   const resetGame = async () => {
-    await delayTime(500)
-    setAllLetters([...alphabet]);
-    await delayTime(500)
+    alphabetRef.current.resetAlphabet();
     setAttempts([]);
-    await delayTime(500)
     setLastAttempt("");
-    await delayTime(500)
     setCurrentWord(getRandomWord(wordLength));
-    await delayTime(500)
-    setAllLetters([...alphabet])
-    await delayTime(500)
   }
 
   const showAnswer = () => {
@@ -169,16 +113,7 @@ function App() {
           }
         </select>
       </div>
-      <div className="letters">
-        {
-          allLetters.map(char => (
-            <div key={char.letter} className="cell">
-              <LetterSquare letter={char.letter} background={char.color} selected={char.active} selectedColor={char.active ? "blue" : "none"} disabled={!char.active && char.color === COLOR_MAPPER.BACKGROUND} />
-            </div>
-          )
-          )
-        }
-      </div>
+      <Alphabet ref={alphabetRef}/>
       {wordLength ? (<div className="wordle">
         {
           attempts.map((a, i) => <LetterRow key={i} word={a} active={false} currentWord={currentWord} index={i + 1} wordLength={wordLength} />)
