@@ -61,7 +61,6 @@ function App() {
     alphabetRef.current.handleWord(result);
     if (currentWord === word) {
       new Audio(goodAnswerLingo).play();
-      setTimeout(resetGame, 5000)
     } else {
       setLastAttempt("")
       const newList = [...attempts];
