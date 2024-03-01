@@ -38,7 +38,7 @@ const Alphabet = forwardRef((props, ref) => {
     const handleWord = (result) => {
         const allLetterLocal = [...allLetters];
         for (const letter of result) {
-            const charIndex = allLetterLocal.findIndex(e => e.letter === letter.letter);
+            const charIndex = allLetterLocal.findIndex(e => e.letter.toLowerCase() === letter.letter.toLowerCase());
             switch (letter.color) {
                 case COLOR_MAPPER.DEFAULT:
                 if (allLetterLocal[charIndex].color === COLOR_MAPPER.BACKGROUND) {
@@ -47,15 +47,15 @@ const Alphabet = forwardRef((props, ref) => {
                 }
                 break;
                 case COLOR_MAPPER.CORRECT_LETTER:
-                allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_LETTER;
-                allLetterLocal[charIndex].active = false;
+                  allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_LETTER;
+                  allLetterLocal[charIndex].active = false;
                 break;
                 case COLOR_MAPPER.CORRECT_POSITION:
-                allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_POSITION;
-                allLetterLocal[charIndex].active = false;
+                  allLetterLocal[charIndex].color = COLOR_MAPPER.CORRECT_POSITION;
+                  allLetterLocal[charIndex].active = false;
                 break;
                 default:
-                console.log(letter.color)
+                  console.log(letter.color)
             }
         } 
         setAllLetters(allLetterLocal);
