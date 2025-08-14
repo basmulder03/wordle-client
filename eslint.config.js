@@ -8,7 +8,12 @@ import { globalIgnores } from 'eslint/config'
 export default tseslint.config([
   globalIgnores(['dist']),
   {
+
+
+export default tseslint.config([
+  {
     files: ['**/*.{ts,tsx}'],
+    ignores: ['dist'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
