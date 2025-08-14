@@ -1,17 +1,17 @@
 @import "./variables.less";
 
+/* smaller default gap for a denser grid */
 .board {
   display: grid;
-  gap: @gap;
-  width: 100%;
-  max-width: 600px;
-  padding: 0 @gap;
+  gap: @gap-sm; /* was @gap */
+  width: auto;
+  max-width: 640px;
 }
 
 .row {
   display: grid;
   grid-template-columns: repeat(var(--len, 5), 1fr);
-  gap: @gap;
+  gap: @gap-sm; /* was @gap */
 }
 
 /* subtle entrance */
@@ -27,10 +27,9 @@
 }
 
 .board {
-  animation: boardFadeIn .2s ease both;
+  animation: boardFadeIn .18s ease both;
 }
 
-/* small screens */
 @media (max-width: 480px) {
   .board {
     max-width: 360px;
