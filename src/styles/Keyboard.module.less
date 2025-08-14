@@ -2,22 +2,91 @@
 
 .keyboard {
   display: grid;
-  gap: @gap-sm; /* tighter */
+  gap: @gap;
   width: 100%;
-  max-width: 640px;
+  max-width: 600px;
   padding: 0 @gap;
-  margin-top: @gap; /* smaller top margin */
+  margin-top: @gap-lg;
 }
 
 .row {
+  display: flex;
   gap: @gap-sm;
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
-/* tighter */
-
+/* base button style */
 .key,
 .special {
-  min-width: 38px; /* was 40px */
-  height: 42px; /* was 44px */
-  padding: 0 .55rem;
+  min-width: 40px;
+  height: 44px;
+  padding: 0 .6rem;
+  border: 1px solid var(--color-border);
+  border-radius: @radius;
+  background: var(--color-key-bg);
+  color: var(--color-key-text);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: filter .15s ease, background-color .2s ease, border-color .2s ease, transform .05s ease;
+  outline: none;
+}
+
+.key:hover,
+.special:hover {
+  filter: brightness(0.95);
+}
+
+.key:active,
+.special:active {
+  transform: translateY(1px);
+}
+
+.key:disabled,
+.special:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+/* state tints, driven by letterStates from the app */
+.correct {
+  background: var(--color-correct);
+  border-color: var(--color-correct);
+  color: #fff;
+}
+
+.present {
+  background: var(--color-present);
+  border-color: var(--color-present);
+  color: #fff;
+}
+
+.absent {
+  background: var(--color-absent);
+  border-color: var(--color-absent);
+  color: #fff;
+}
+
+/* wider buttons for actions */
+.special {
+  min-width: 72px;
+}
+
+/* compact on small screens */
+@media (max-width: 480px) {
+  .keyboard {
+    max-width: 360px;
+  }
+
+  .key, .special {
+    min-width: 34px;
+    height: 40px;
+    padding: 0 .5rem;
+    font-weight: 600;
+  }
+
+  .special {
+    min-width: 64px;
+  }
 }
