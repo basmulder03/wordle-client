@@ -1,5 +1,6 @@
 import {BrowserRouter, Link, Route, Routes} from "react-router";
 import App from './App'
+import ThemeSwitcher from "./components/ThemeSwitcher.tsx";
 import {useI18n} from './i18n/useI18n'
 import About from './screens/About'
 import nav from './styles/Nav.module.less'
@@ -16,7 +17,9 @@ function Nav() {
                     <Link to="/">{t('home')}</Link>
                     <Link to="/about">{t('about')}</Link>
                 </div>
-                <div className={nav.actions}/>
+                <div className={nav.actions}>
+                    <ThemeSwitcher/>
+                </div>
             </div>
         </header>
     )
