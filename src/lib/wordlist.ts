@@ -12,7 +12,7 @@ export type Manifest = {
 const BASE = import.meta.env.BASE_URL || '/';
 
 // Map a locale to the filename prefix you use in wordlist files
-// Extend when you add more lcoales (e.g., "en-US"-> "en")
+// Extend when you add more locales (e.g., "en-US"-> "en")
 export function localeToPrefix(locale: string): string {
     if (locale?.toLowerCase().startsWith('nl')) return 'nl';
     if (locale?.toLowerCase().startsWith('en')) return 'en';
