@@ -116,7 +116,9 @@ async function main() {
     const counts: Record<string, number> = {};
     for (const L of cfg.lengths) {
         const arr = Array.from(buckets.get(L)!).sort();
-        const file = resolve(cfg.outDir, `nl_${L}.txt`);
+        const fileName = `nl_${L}.txt`
+        const file = resolve(cfg.outDir, fileName);
+        counts[fileName] = arr.length;
         writeFileSync(file, arr.join('\n') + '\n', 'utf8');
         console.log(`Wrote ${arr.length} words of length ${L} to ${file}`);
     }
