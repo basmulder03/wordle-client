@@ -9,7 +9,8 @@
     "lint": "eslint wordle-client",
     "preview": "vite preview",
     "wordlist:build": "tsx scripts/build-wordlists.ts",
-    "wordlist:clean": "rimraf public/wordlists && mkdir -p public/wordlists"
+    "wordlist:clean": "rimraf public/wordlists && npx mkdirp public/wordlists && rimraf public/LICENSE.txt && rimraf public/ATTRIBUTION.md",
+    "wordlist:refresh": "pnpm run wordlist:clean && pnpm run wordlist:build"
   },
   "dependencies": {
     "i18next": "^23.16.8",

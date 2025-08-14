@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {Link} from "react-router";
 import {useDateFmt} from "../i18n/dates.ts";
 import {useI18n} from "../i18n/useI18n.ts";
 import {getAllowedLengths, loadManifest, localeToPrefix} from "../lib/wordlist.ts";
@@ -94,7 +95,7 @@ export default function About() {
                 )}
             </section>
 
-            <p className={styles.back}><a href='#/'>{t('backHome')}</a></p>
+            <p className={styles.back}><Link to='/'>{t('backHome')}</Link></p>
         </article>
     )
 }

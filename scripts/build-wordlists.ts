@@ -1,141 +1,220 @@
-// Build length specific Dutch word lists from the OpenTaal master list on Github.
+// scripts/build-wordlists.ts
+// Build length-specific Dutch word lists from the OpenTaal master list on GitHub,
+// write manifest.json, download LICENSE.txt, and render ATTRIBUTION.md with
+// placeholders + injected file list.
 //
 // Usage:
-//   npm run wordlist:build
+//   OPENTAAL_URL=https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/<SHA>/wordlist.txt \
+//   PROJECT_LICENSE="MIT" \
+//   npm run wordlists:build
 //
-// Env overrides (all optional):
-//   OPENTAAL_URL=https://.../wordlist.txt
-//   OUT_DIR=public/wordlists
-//   LENGTHS=4,5,6,7,8,9
-//   LOWERCASE=true|false
-//   STRIP_DIACRITICS=true|false
-//   ASCII_ONLY=true|false
-//   NO_SPACES=true|false
-//   NO_PUNCTUATION=true|false
+// Notes:
+// - If you don't set a SHA in OPENTAAL_URL, we extract it best-effort from the URL (last path part).
+// - If public/ATTRIBUTION.template.md exists, we'll use it; otherwise we use a built-in template.
 
-import {mkdirSync, writeFileSync} from 'fs';
-import {resolve} from 'path';
+import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs'
+import {dirname, resolve} from 'node:path'
 
 type Cfg = {
-    sourceUrl: string;
-    outDir: string;
-    lengths: number[];
+    sourceUrl: string
+    outDir: string
+    lengths: number[]
     normalize: {
-        lowercase: boolean;
-        stripDiacritics: boolean;
-        asciiOnly: boolean;
-        noSpaces: boolean;
-        noPunctuation: boolean;
-        noNumbers: boolean;
-    };
+        lowercase: boolean
+        stripDiacritics: boolean
+        asciiOnly: boolean
+        noSpaces: boolean
+        noPunctuation: boolean
+    }
+    projectLicense: string
 }
 
-// Load optional local config file (no crash if missing)
-async function loadLocalConfig(): Promise<Partial<Cfg>> {
+const DEFAULT_URL =
+    'https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt'
+
+const cfg: Cfg = {
+    sourceUrl: process.env.OPENTAAL_URL || DEFAULT_URL,
+    outDir: resolve(process.cwd(), 'public/wordlists'),
+    lengths: (process.env.LENGTHS || '4,5,6,7')
+        .split(',')
+        .map(s => parseInt(s.trim(), 10))
+        .filter(n => Number.isFinite(n)),
+    normalize: {
+        lowercase: boolFromEnv('LOWERCASE', true),
+        stripDiacritics: boolFromEnv('STRIP_DIACRITICS', true),
+        asciiOnly: boolFromEnv('ASCII_ONLY', true),
+        noSpaces: boolFromEnv('NO_SPACES', true),
+        noPunctuation: boolFromEnv('NO_PUNCTUATION', true),
+    },
+    projectLicense: process.env.PROJECT_LICENSE || readPackageLicense() || 'UNLICENSED'
+}
+
+function boolFromEnv(name: string, dflt: boolean) {
+    const v = process.env[name];
+    if (v == null) return dflt
+    return /^(1|true|yes|on)$/i.test(v)
+}
+
+function readPackageLicense(): string | null {
     try {
-        const mod = await import('./filter-opentaal.config.js') as Partial<Cfg>;
-        return mod || {};
+        const pkg = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'))
+        return pkg.license || null
     } catch {
-        console.warn('No local config found, using defaults');
-        return {};
+        return null
     }
 }
 
-const boolFromEnv = (name: string, defaultValue: boolean): boolean => {
-    const v = process.env[name];
-    if (v == null) return defaultValue;
-    return /^(1|true|yes|on)$/i.test(v);
-}
-
-const arrayFromEnv = (name: string, defaultValue: number[]) => {
-    const v = process.env[name];
-    if (v == null) return defaultValue;
-    return v.split(',').map(x => parseInt(x.trim(), 10)).filter(x => !isNaN(x));
-}
-
-const stripDiacritics = (str: string): string => {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
-
-const isAZ = (str: string) => /^[a-z]+$/.test(str);
+const stripDiacritics = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+const isAZ = (s: string) => /^[a-z]+$/.test(s)
 
 async function downloadText(url: string): Promise<string> {
-    const res = await fetch(url, {redirect: 'follow'});
-    if (!res.ok) {
-        throw new Error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);
-    }
-    return res.text();
+    const res = await fetch(url, {redirect: 'follow'})
+    if (!res.ok) throw new Error(`Failed to download ${url}: ${res.status} ${res.statusText}`)
+    return await res.text()
 }
 
+async function downloadTo(pathAbs: string, url: string) {
+    const text = await downloadText(url)
+    mkdirSync(dirname(pathAbs), {recursive: true})
+    writeFileSync(pathAbs, text, 'utf8')
+    console.log(`Saved ${pathAbs}`)
+}
+
+function extractCommitFromUrl(url: string): string {
+    // try to parse .../opentaal-wordlist/<SHA>/wordlist.txt
+    const parts = url.split('/')
+    // look for a 7+-hex-ish segment
+    const sha = parts.find(p => /^[0-9a-f]{7,}$/i.test(p))
+    return sha || 'master'
+}
+
+// --- ATTRIBUTION rendering ----------------------------------------------------
+
+const DEFAULT_ATTRIBUTION_TEMPLATE = `# Attribution
+
+This project includes word lists derived from **OpenTaal**.
+
+- Source: https://github.com/OpenTaal/opentaal-wordlist
+- Snapshot (commit): {{OPENTAAL_COMMIT_SHA}}
+- Fetched from: {{OPENTAAL_URL}}
+- Generated: {{GENERATED_AT_ISO}}
+
+Derived files (in \`public/wordlists/\`):
+{{GENERATED_FILES}}
+
+## License (OpenTaal)
+
+OpenTaal distributes its word list under a **dual license**. You may choose **either**:
+- **BSD 3-Clause License**, or
+- **Creative Commons Attribution 3.0 (CC BY 3.0)**
+
+We retain OpenTaal’s license file (\`LICENSE.txt\`) in this distribution.
+© OpenTaal — see \`LICENSE.txt\` for full terms.
+
+### Transformations applied
+- Lowercased all entries
+- Removed spaces/punctuation/hyphens
+- {{DIACRITICS_NOTE}}
+- Split into length-specific subsets
+
+---
+
+## Project license
+
+This application's own code and assets are licensed separately from the OpenTaal data.
+Project license: **{{PROJECT_LICENSE}}**.
+
+`
+
+function renderAttribution(opts: {
+    url: string
+    commit: string
+    generatedAtISO: string
+    counts: Record<string, number>
+    projectLicense: string
+    diacriticsStripped: boolean
+    templatePath?: string
+}) {
+    const template = opts.templatePath && existsSync(opts.templatePath)
+        ? readFileSync(opts.templatePath, 'utf8')
+        : DEFAULT_ATTRIBUTION_TEMPLATE
+
+    const filesList = Object.entries(opts.counts)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([file, count]) => `- \`${file}\` — ${count.toLocaleString()} words`)
+        .join('\n')
+
+    return template
+        .replace(/{{OPENTAAL_COMMIT_SHA}}/g, opts.commit)
+        .replace(/{{OPENTAAL_URL}}/g, opts.url)
+        .replace(/{{GENERATED_AT_ISO}}/g, opts.generatedAtISO)
+        .replace(/{{PROJECT_LICENSE}}/g, opts.projectLicense)
+        .replace(/{{GENERATED_FILES}}/g, filesList || '- *(none)*')
+        .replace(/{{DIACRITICS_NOTE}}/g, opts.diacriticsStripped ? 'Stripped diacritics' : 'Kept diacritics')
+}
+
+// --- MAIN --------------------------------------------------------------------
+
 async function main() {
-    const local = await loadLocalConfig();
+    mkdirSync(cfg.outDir, {recursive: true})
+    console.log(`→ Downloading OpenTaal master list:\n   ${cfg.sourceUrl}`)
+    const raw = await downloadText(cfg.sourceUrl)
+    const lines = raw.split(/\r?\n/)
+    console.log(`→ Master lines: ${lines.length.toLocaleString()}`)
 
-    const cfg: Cfg = {
-        sourceUrl: process.env.OPENTAAL_URL || local.sourceUrl || 'https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt',
-        outDir: process.env.OUT_DIR || local.outDir || 'public/wordlists',
-        lengths: arrayFromEnv('LENGTHS', local.lengths || [4, 5, 6, 7, 8, 9]),
-        normalize: {
-            lowercase: boolFromEnv('LOWERCASE', local.normalize?.lowercase ?? true),
-            stripDiacritics: boolFromEnv('STRIP_DIACRITICS', local.normalize?.stripDiacritics ?? true),
-            asciiOnly: boolFromEnv('ASCII_ONLY', local.normalize?.asciiOnly ?? true),
-            noSpaces: boolFromEnv('NO_SPACES', local.normalize?.noSpaces ?? true),
-            noPunctuation: boolFromEnv('NO_PUNCTUATION', local.normalize?.noPunctuation ?? true),
-            noNumbers: boolFromEnv('NO_NUMBERS', local.normalize?.noNumbers ?? true),
-        }
-    }
+    // normalize & filter
+    let filtered = lines.map(s => s.trim()).filter(Boolean)
+    if (cfg.normalize.noSpaces) filtered = filtered.filter(w => !w.includes(' '))
+    if (cfg.normalize.lowercase) filtered = filtered.map(w => w.toLowerCase())
+    if (cfg.normalize.stripDiacritics) filtered = filtered.map(stripDiacritics)
+    if (cfg.normalize.noPunctuation) filtered = filtered.filter(w => /^[a-z]+$/.test(w))
+    if (cfg.normalize.asciiOnly) filtered = filtered.filter(isAZ)
 
-    mkdirSync(cfg.outDir, {recursive: true});
-    console.log(`Downloading wordlist from ${cfg.sourceUrl}`);
-    const raw = await downloadText(cfg.sourceUrl);
-    const lines = raw.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
+    console.log(`→ After filtering: ${filtered.length.toLocaleString()} words`)
 
-    console.log(`Loaded ${lines.length} lines from the wordlist`);
-
-    // Normalize & filter words
-    let filtered = lines
-        .map(s => s.trim())
-        .filter(Boolean);
-
-    if (cfg.normalize.noSpaces) filtered = filtered.filter(s => !s.includes(' '));
-    if (cfg.normalize.lowercase) filtered = filtered.map(s => s.toLowerCase());
-    if (cfg.normalize.stripDiacritics) filtered = filtered.map(stripDiacritics);
-    if (cfg.normalize.noPunctuation) filtered = filtered.filter(s => /[a-zA-Z]/.test(s));
-    if (cfg.normalize.noNumbers) filtered = filtered.filter(s => isAZ(s));
-
-    console.log(`Filtered down to ${filtered.length} words after normalization`);
-
-    // Group by length
-    const buckets = new Map<number, Set<string>>();
-    for (const L of cfg.lengths) buckets.set(L, new Set<string>());
-    for (const w of filtered) {
-        const L = w.length;
-        if (buckets.has(L)) buckets.get(L)!.add(w);
-    }
-
-    // Write files
-    const counts: Record<string, number> = {};
+    // buckets & files
+    const counts: Record<string, number> = {}
     for (const L of cfg.lengths) {
-        const arr = Array.from(buckets.get(L)!).sort();
-        const fileName = `nl_${L}.txt`
-        const file = resolve(cfg.outDir, fileName);
-        counts[fileName] = arr.length;
-        writeFileSync(file, arr.join('\n') + '\n', 'utf8');
-        console.log(`Wrote ${arr.length} words of length ${L} to ${file}`);
+        const set = Array.from(new Set(filtered.filter(w => w.length === L))).sort()
+        const file = resolve(cfg.outDir, `nl_${L}.txt`)
+        writeFileSync(file, set.join('\n'), 'utf8')
+        counts[`nl_${L}.txt`] = set.length
+        console.log(`✓ Wrote nl_${L}.txt  (${set.length.toLocaleString()} words)`)
     }
 
-    // Manifest + metadata
+    // manifest
     const manifest = {
         source: cfg.sourceUrl,
         license: '/LICENSE.txt',
         counts,
         options: cfg,
         generatedAt: new Date().toISOString()
-    };
-    writeFileSync(resolve(cfg.outDir, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf8');
-    console.log(`Wrote manifest.json with ${cfg.lengths.length} lengths`);
+    }
+    writeFileSync(resolve(cfg.outDir, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf8')
+    console.log('✓ Wrote manifest.json')
+
+    // license file (OpenTaal)
+    const licenseDest = resolve(process.cwd(), 'public', 'LICENSE.txt')
+    await downloadTo(licenseDest, 'https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/LICENSE.txt')
+
+    // attribution (render with injection)
+    const attributionDest = resolve(process.cwd(), 'public', 'ATTRIBUTION.md')
+    const attributionTemplate = resolve(process.cwd(), 'public', 'ATTRIBUTION.template.md') // optional
+    const commit = extractCommitFromUrl(cfg.sourceUrl)
+    const attribution = renderAttribution({
+        url: cfg.sourceUrl,
+        commit,
+        generatedAtISO: manifest.generatedAt,
+        counts,
+        projectLicense: cfg.projectLicense,
+        diacriticsStripped: cfg.normalize.stripDiacritics,
+        templatePath: attributionTemplate
+    })
+    writeFileSync(attributionDest, attribution, 'utf8')
+    console.log(`✓ Wrote ${attributionDest}`)
 }
 
 main().catch(err => {
-    console.error('Error building wordlist:', err);
-    process.exit(1);
+    console.error('✗ Build failed:', err)
+    process.exit(1)
 })
