@@ -1,4 +1,4 @@
-import {useI18n} from "./index.tsx";
+import {useI18n} from "./useI18n";
 
 export function useDateFmt() {
     const {lang} = useI18n();
