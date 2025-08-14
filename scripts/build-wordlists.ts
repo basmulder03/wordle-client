@@ -35,7 +35,7 @@ const DEFAULT_URL =
 const cfg: Cfg = {
     sourceUrl: process.env.OPENTAAL_URL || DEFAULT_URL,
     outDir: resolve(process.cwd(), 'public/wordlists'),
-    lengths: (process.env.LENGTHS || '4,5,6,7')
+    lengths: (process.env.LENGTHS || '4,5,6,7,8,9')
         .split(',')
         .map(s => parseInt(s.trim(), 10))
         .filter(n => Number.isFinite(n)),
