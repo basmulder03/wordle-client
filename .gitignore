@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# the wordlist should be excluded, it will be downloaded at build time in the pipeline
+**/wordlists/
