@@ -1,4 +1,5 @@
 import {memo} from "react";
+import type {CSSVars} from "../helpers/types.ts";
 import styles from "../styles/Board.module.less";
 import Tile, {type TileState} from "./Tile.tsx";
 
@@ -11,15 +12,18 @@ type Props = {
     wordLen: number;                // selected word length; drives grid columns
 }
 
+type BoardCSS = CSSVars<'--len'>;
+
 /**
  * Board renders the grid of tiles. The active row show the user's
  * in-progress "current" input; other rows show their evaluated states.
  */
 function BoardImpl({rows, activeRow, current, wordLen}: Props) {
+    const boardStyle: BoardCSS = {'--len': wordLen};
     return (
         <div
             className={styles.board}
-            style={{['--len' as any]: wordLen}}
+            style={boardStyle}
             role="grid"
             aria-rowcount={rows.length}
             aria-colcount={wordLen}

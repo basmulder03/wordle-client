@@ -1,7 +1,8 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import Board, {Cell} from './components/Board'
-import Keyboard, {KeyState} from './components/Keyboard'
-import {useI18n} from './i18n'
+import Board, {type Cell} from './components/Board'
+import Keyboard, {type KeyState} from './components/Keyboard'
+import type {CSSVars} from "./helpers/types.ts";
+import {useI18n} from './i18n/useI18n'
 import {getDailyProgress, getPrefs, getStats, getTodayKey, setDailyProgress, setPrefs, setStats} from './lib/storage'
 import {
     currentWordlistUrl,
@@ -12,6 +13,8 @@ import {
     pickDailyWord
 } from './lib/wordlist'
 import s from './styles/App.module.less'
+
+type MainCSS = CSSVars<'--len'>;
 
 const MAX_ATTEMPTS = 6
 
@@ -26,6 +29,7 @@ export default function App() {
     const [letterStates, setLetterStates] = useState<Record<string, KeyState>>({})
 
     const todayKey = useMemo(getTodayKey, [])
+    const mainStyle: MainCSS = {'--len': wordLen};
 
     // Load manifest → determine allowed lengths → normalize selected length → load answer / progress
     useEffect(() => {
@@ -193,7 +197,7 @@ export default function App() {
                 </label>
             </header>
 
-            <main className={s.main}>
+            <main className={s.main} style={mainStyle}>
                 <Board rows={rows} activeRow={activeRow} current={current} wordLen={wordLen}/>
                 <Keyboard onKey={handleKey} letterStates={letterStates}/>
             </main>
