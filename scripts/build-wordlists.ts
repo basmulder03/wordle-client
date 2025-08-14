@@ -25,6 +25,7 @@ type Cfg = {
         asciiOnly: boolean
         noSpaces: boolean
         noPunctuation: boolean
+        noNumbers: boolean
     }
     projectLicense: string
 }
