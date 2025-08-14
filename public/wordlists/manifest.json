@@ -1,0 +1,26 @@
+{
+  "source": "https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt",
+  "license": "/LICENSE.txt",
+  "counts": {},
+  "options": {
+    "sourceUrl": "https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt",
+    "outDir": "public/wordlists",
+    "lengths": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "normalize": {
+      "lowercase": true,
+      "stripDiacritics": true,
+      "asciiOnly": true,
+      "noSpaces": true,
+      "noPunctuation": true,
+      "noNumbers": true
+    }
+  },
+  "generatedAt": "2025-08-14T17:27:24.838Z"
+}

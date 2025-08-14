@@ -1,0 +1,6 @@
+{
+  "title": "Mijn Wordle",
+  "guess": "Gok",
+  "youWon": "Je hebt gewonnen!",
+  "youLost": "Je hebt verloren! Het woord was {{word}}."
+}
