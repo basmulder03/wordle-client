@@ -37,7 +37,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # Generate wordlists -> writes to public/wordlists
-      - run: pnpm run wordlists:build
+      - run: pnpm run wordlist:build
 
       - run: pnpm run build
 
