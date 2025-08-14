@@ -1,17 +1,13 @@
+/* src/styles/Board.module.less */
+@import "./variables.less";
+
 .board {
   display: grid;
-  gap: 4px;
+  gap: @gap;
 }
 
 .row {
-  display: flex;
-}
-
-.cell {
-  width: 40px;
-  height: 40px;
-  border: 2px solid #ccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(var(--len, 5), 1fr);
+  gap: @gap;
 }
