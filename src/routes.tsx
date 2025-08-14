@@ -1,4 +1,4 @@
-import {HashRouter, Link, Route, Routes} from "react-router";
+import {BrowserRouter as Router, Link, Route, Routes} from "react-router";
 import App from "./App.tsx";
 import {useI18n} from "./i18n/useI18n.ts";
 import About from "./screens/About.tsx";
@@ -14,14 +14,17 @@ function Nav() {
     )
 }
 
+const base
+    = import.meta.env.BASE_URL || '/';
+
 export default function AppRoutes() {
     return (
-        <HashRouter basename={import.meta.env.BASE_URL}>
+        <Router basename={base}>
             <Nav/>
             <Routes>
                 <Route path="/" element={<App/>}/>
                 <Route path="/about" element={<About/>}/>
             </Routes>
-        </HashRouter>
+        </Router>
     )
 }
