@@ -1,0 +1,16 @@
+@import "./variables.less";
+
+/* Whole page area (nav + content) uses the full viewport height */
+.page {
+  min-height: 100dvh; /* viewport height; handles mobile dynamic bars */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content area below the nav stretches to fill remaining height */
+.content {
+  flex: 1;
+  display: flex; /* lets App center its own stuff */
+  flex-direction: column;
+  min-height: 0; /* prevent unexpected overflow on small screens */
+}

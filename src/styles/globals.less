@@ -1,0 +1,83 @@
+@import "./variables.less";
+
+/* 1) LIGHT default variables */
+:root {
+  --color-bg: @color-bg;
+  --color-text: @color-text;
+  --color-border: @color-border;
+
+  --color-key-bg: @color-key-bg;
+  --color-key-text: @color-key-text;
+
+  --color-correct: @color-correct;
+  --color-present: @color-present;
+  --color-absent: @color-absent;
+
+  --tile-size: @tile-size;
+  --tile-font-size: @tile-font-size;
+  --gap: @gap;
+}
+
+/* 2) AUTO → when system prefers dark, override */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: @color-bg-dark;
+    --color-text: @color-text-dark;
+    --color-border: @color-border-dark;
+
+    --color-key-bg: @color-key-bg-dark;
+    --color-key-text: @color-key-text-dark;
+
+    --color-correct: @color-correct-dark;
+    --color-present: @color-present-dark;
+    --color-absent: @color-absent-dark;
+  }
+}
+
+/* 3) FORCE — explicit theme classes always win */
+.theme-light {
+  --color-bg: @color-bg;
+  --color-text: @color-text;
+  --color-border: @color-border;
+
+  --color-key-bg: @color-key-bg;
+  --color-key-text: @color-key-text;
+
+  --color-correct: @color-correct;
+  --color-present: @color-present;
+  --color-absent: @color-absent;
+}
+
+.theme-dark {
+  --color-bg: @color-bg-dark;
+  --color-text: @color-text-dark;
+  --color-border: @color-border-dark;
+
+  --color-key-bg: @color-key-bg-dark;
+  --color-key-text: @color-key-text-dark;
+
+  --color-correct: @color-correct-dark;
+  --color-present: @color-present-dark;
+  --color-absent: @color-absent-dark;
+}
+
+/* Base element styles (use vars) */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+button, select {
+  font: inherit;
+}

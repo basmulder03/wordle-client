@@ -1,0 +1,23 @@
+{
+  "title": "Word Game",
+  "loading": "Loading…",
+  "length": "Length",
+  "language": "Language",
+  "reset": "Reset",
+  "enter": "Enter",
+  "backspace": "Backspace",
+  "win": "You win! 🎉",
+  "lose": "Sorry. The word was: {{word}}",
+  "wordlistLink": "Wordlist & Attribution",
+  "home": "Home",
+  "about": "About",
+  "attribution": "Attribution",
+  "attributionText": "This app uses a filtered word list from OpenTaal.",
+  "attributionLicense": " Usage permitted under BSD‑3‑Clause or CC BY 3.0 with attribution.",
+  "tech": "Tech",
+  "backHome": "Back to home",
+  "source": "Source",
+  "generated": "Generated",
+  "availableLengths": "Available lengths",
+  "files": "Files"
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Woordspel",
+  "loading": "Laden…",
+  "length": "Lengte",
+  "language": "Taal",
+  "reset": "Reset",
+  "enter": "Enter",
+  "backspace": "Backspace",
+  "win": "Gewonnen! 🎉",
+  "lose": "Helaas. Het woord was: {{word}}",
+  "wordlistLink": "Woordenlijst & Vermelding",
+  "home": "Start",
+  "about": "Over",
+  "attribution": "Vermelding",
+  "attributionText": "Deze applicatie gebruikt een gefilterde woordenlijst van OpenTaal.",
+  "attributionLicense": " Gebruik is toegestaan onder BSD‑3‑Clause of CC BY 3.0 met bronvermelding.",
+  "tech": "Techniek",
+  "backHome": "Terug naar start",
+  "source": "Bron",
+  "generated": "Gegenereerd",
+  "availableLengths": "Beschikbare lengtes",
+  "files": "Bestanden"
+}

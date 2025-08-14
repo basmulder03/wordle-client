@@ -1,0 +1,61 @@
+@import "./variables.less";
+
+.about {
+  max-width: 52rem;
+  margin: 1rem auto;
+  padding: 0 @gap;
+  line-height: 1.6;
+}
+
+.card {
+  background: fade(@fg, 6%);
+  border: 1px solid fade(@fg, 20%);
+  border-radius: @radius;
+  padding: @gap-lg;
+  margin: @gap-lg 0;
+}
+
+.links {
+  margin: .5rem 0;
+  padding-left: 1rem;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: .25rem @gap;
+  margin-top: .5rem;
+
+  dt {
+    opacity: .8;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.sub {
+  margin-top: .75rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: .5rem;
+
+  th, td {
+    border: 1px solid fade(@fg, 20%);
+    padding: .4rem .5rem;
+  }
+
+  th {
+    text-align: left;
+    background: fade(@fg, 8%);
+  }
+}
+
+.back {
+  text-align: center;
+  margin: @gap-lg 0;
+}

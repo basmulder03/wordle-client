@@ -1,0 +1,64 @@
+@import "./variables.less";
+
+/* Full‑width top bar that never overlaps content */
+.nav {
+  position: sticky; /* stays at top when scrolling */
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: @gap;
+  padding: 0.5rem clamp(0.5rem, 3vw, 1rem);
+
+  background: fade(@fg, 6%);
+  border-bottom: 1px solid fade(@fg, 20%);
+  backdrop-filter: blur(6px);
+}
+
+.wrap {
+  width: 100%;
+  max-width: 960px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: @gap;
+}
+
+/* left: simple inline links */
+.links {
+  display: flex;
+  align-items: center;
+  gap: @gap;
+
+  a {
+    text-decoration: none;
+    color: @fg;
+    padding: 0.35rem 0.6rem;
+    border-radius: @radius;
+
+    &:hover {
+      background: fade(@fg, 10%);
+    }
+  }
+}
+
+/* right: room for small controls if you add them later */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: @gap;
+}
+
+/* prevent layout jiggle on tiny screens */
+@media (max-width: 480px) {
+  .wrap {
+    gap: @gap-sm;
+  }
+
+  .links a {
+    padding: 0.3rem 0.5rem;
+  }
+}
