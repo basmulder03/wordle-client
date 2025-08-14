@@ -1,0 +1,91 @@
+/* src/styles/globals.less */
+@import "./variables.less";
+
+/* CSS Reset (basic) */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, menu, ol, ul, li,
+fieldset, form, label, legend,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+main, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* Box sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background-color: @color-bg;
+  color: @color-text;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.dark {
+  background-color: @color-bg-dark;
+  color: @color-text-dark;
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-height {
+  height: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Theme variables via CSS custom props for runtime switching */
+:root {
+  --tile-size: @tile-size;
+  --tile-font-size: @tile-font-size;
+  --gap: @gap;
+
+  --color-bg: @color-bg;
+  --color-text: @color-text;
+  --color-border: @color-border;
+  --color-correct: @color-correct;
+  --color-present: @color-present;
+  --color-absent: @color-absent;
+  --color-key-bg: @color-key-bg;
+  --color-key-text: @color-key-text;
+}
+
+body.dark {
+  --color-bg: @color-bg-dark;
+  --color-text: @color-text-dark;
+  --color-border: @color-border-dark;
+  --color-correct: @color-correct-dark;
+  --color-present: @color-present-dark;
+  --color-absent: @color-absent-dark;
+  --color-key-bg: @color-key-bg-dark;
+  --color-key-text: @color-key-text-dark;
+}
