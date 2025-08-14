@@ -1,7 +1,7 @@
 export type Prefs = {
     language?: string;        // e.g., 'nl-NL' | 'en-US'
     wordLength: number;       // last chosen length
-    theme?: 'light' | 'dark';
+    theme?: 'light' | 'dark' | 'auto';
     sfx?: boolean;
 };
 
