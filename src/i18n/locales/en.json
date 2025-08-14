@@ -15,5 +15,9 @@
   "attributionText": "This app uses a filtered word list from OpenTaal.",
   "attributionLicense": " Usage permitted under BSD‑3‑Clause or CC BY 3.0 with attribution.",
   "tech": "Tech",
-  "backHome": "Back to home"
+  "backHome": "Back to home",
+  "source": "Source",
+  "generated": "Generated",
+  "availableLengths": "Available lengths",
+  "files": "Files"
 }

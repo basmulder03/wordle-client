@@ -1,15 +1,15 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
-import App from './App.tsx'
 import {I18nProvider} from "./i18n";
 
 // Import the global styles before component CSS modules
 import './styles/globals.less';
+import AppRoutes from "./routes.tsx";
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <I18nProvider>
-            <App/>
+            <AppRoutes/>
         </I18nProvider>
     </StrictMode>,
 )
