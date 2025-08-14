@@ -46,6 +46,7 @@ const cfg: Cfg = {
         asciiOnly: boolFromEnv('ASCII_ONLY', true),
         noSpaces: boolFromEnv('NO_SPACES', true),
         noPunctuation: boolFromEnv('NO_PUNCTUATION', true),
+        noNumbers: boolFromEnv('NO_NUMBERS', true),
     },
     projectLicense: process.env.PROJECT_LICENSE || readPackageLicense() || 'UNLICENSED'
 }
