@@ -1,8 +1,11 @@
-import {BrowserRouter, Link, Route, Routes} from 'react-router'
+import {BrowserRouter, Link, Route, Routes} from "react-router";
 import App from './App'
 import {useI18n} from './i18n/useI18n'
 import About from './screens/About'
 import nav from './styles/Nav.module.less'
+import page from './styles/Page.module.less'
+
+const base = import.meta.env.BASE_URL || '/';
 
 function Nav() {
     const {t} = useI18n()
@@ -13,24 +16,24 @@ function Nav() {
                     <Link to="/">{t('home')}</Link>
                     <Link to="/about">{t('about')}</Link>
                 </div>
-                <div className={nav.actions}>
-                    {/* space for theme/lang toggles if needed */}
-                </div>
+                <div className={nav.actions}/>
             </div>
         </header>
     )
 }
 
 export default function AppRoutes() {
-    // dynamic basename keeps local dev working at "/" and Pages at "/wordle-client/"
-    const base = import.meta.env.BASE_URL || '/'
     return (
         <BrowserRouter basename={base}>
-            <Nav/>
-            <Routes>
-                <Route path="/" element={<App/>}/>
-                <Route path="/about" element={<About/>}/>
-            </Routes>
+            <div className={page.page}>
+                <Nav/>
+                <div className={page.content}>
+                    <Routes>
+                        <Route path="/" element={<App/>}/>
+                        <Route path="/about" element={<About/>}/>
+                    </Routes>
+                </div>
+            </div>
         </BrowserRouter>
     )
 }
