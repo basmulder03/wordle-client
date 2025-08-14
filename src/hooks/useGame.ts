@@ -22,7 +22,7 @@ export function useGame(lang: string) {
     const [letterStates, setLetterStates] = useState<Record<string, KeyState>>({});
     const [outcome, setOutcome] = useState<Outcome>(null);
 
-    const today = useMemo(getToday, [])
+    const today = useMemo(() => getToday(), [])
 
     // Load manifest -> allowed lengths -> normalize selection -> load daily answer and progress
     useEffect(() => {
