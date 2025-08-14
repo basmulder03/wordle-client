@@ -1,13 +1,38 @@
-/* src/styles/Board.module.less */
 @import "./variables.less";
 
 .board {
   display: grid;
   gap: @gap;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 @gap;
 }
 
 .row {
   display: grid;
   grid-template-columns: repeat(var(--len, 5), 1fr);
   gap: @gap;
+}
+
+/* subtle entrance */
+@keyframes boardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.board {
+  animation: boardFadeIn .2s ease both;
+}
+
+/* small screens */
+@media (max-width: 480px) {
+  .board {
+    max-width: 360px;
+  }
 }

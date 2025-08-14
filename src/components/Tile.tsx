@@ -1,6 +1,6 @@
 import {type CSSProperties, memo, useMemo} from "react";
-import type {CSSVars} from "../helpers/types.ts";
 import styles from "../styles/Tile.module.less";
+import type {CSSVars} from "../types/css-vars.ts";
 
 export type TileState = 'empty' | 'correct' | 'present' | 'absent';
 
