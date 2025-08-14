@@ -1,7 +1,14 @@
 {
   "source": "https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt",
   "license": "/LICENSE.txt",
-  "counts": {},
+  "counts": {
+    "nl_4.txt": 4849,
+    "nl_5.txt": 9723,
+    "nl_6.txt": 17329,
+    "nl_7.txt": 25277,
+    "nl_8.txt": 32798,
+    "nl_9.txt": 39896
+  },
   "options": {
     "sourceUrl": "https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt",
     "outDir": "public/wordlists",
@@ -22,5 +29,5 @@
       "noNumbers": true
     }
   },
-  "generatedAt": "2025-08-14T17:27:24.838Z"
+  "generatedAt": "2025-08-14T19:54:43.047Z"
 }
