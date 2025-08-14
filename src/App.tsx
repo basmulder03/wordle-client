@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import Board, {Cell} from './components/Board'
 import Keyboard, {KeyState} from './components/Keyboard'
 import {useI18n} from './i18n'
@@ -117,7 +117,7 @@ export default function App() {
 
         // Using evaluateGuess properly:
         // (we keep the earlier import)
-         
+
         // const res = evaluateGuess(current, answer)
 
         // To keep this snippet consistent with your earlier version, uncomment the import above.
