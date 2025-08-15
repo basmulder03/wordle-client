@@ -1,69 +1,52 @@
-# React + TypeScript + Vite
+# Wordle Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Wordle game client built with React, TypeScript, and Vite. Supports multiple languages and themes.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Play Wordle in your browser
+- Multiple word lengths and languages
+- Theme switcher (light/dark)
+- Local storage for game state
+- Responsive design
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Install dependencies
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run in development mode
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+pnpm run dev
+```
+
+### Build for production
+
+```
+pnpm run build
+```
+
+## Project Structure
+
+- `src/` — Main source code
+    - `components/` — UI components (Board, Keyboard, etc.)
+    - `hooks/` — Custom React hooks
+    - `i18n/` — Internationalization
+    - `lib/` — Utility libraries (storage, theme, wordlist)
+    - `screens/` — Page components
+    - `styles/` — LESS styles
+    - `types/` — TypeScript types
+- `public/wordlists/` — Word lists for different languages and lengths
+- `scripts/` — Utility scripts for wordlists
+
+## Credits
+
+- Word lists from [OpenTaal](https://opentaal.org/) and other sources (see `public/ATTRIBUTION.md`)
+
+## License
+
+See `public/LICENSE.txt` for details.
