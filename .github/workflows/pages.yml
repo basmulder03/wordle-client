@@ -86,7 +86,7 @@ jobs:
             echo "Release $VERSION"; echo
             if [ -n "$PREV_TAG" ]; then echo "Compared to: $PREV_TAG"; echo; fi
             echo "Commits:"; echo
-            git log --pretty=format:'%h%x09%an%x09%s' $RANGE | while IFS=$'\t' read -r sha author subject; do
+            while IFS=$'\t' read -r sha author subject; do
               pr=""
               if [[ $subject =~ \(#([0-9]+)\) ]]; then
                 num=${BASH_REMATCH[1]}; pr=" [#${num}](https://github.com/${REPO}/pull/${num})";
