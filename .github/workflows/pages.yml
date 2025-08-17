@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write  # need write to create tags/releases
   pages: write
   id-token: write
 
@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history for tagging + logs
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -41,12 +43,80 @@ jobs:
       - name: Run unit tests
         run: pnpm test
 
-      # Generate wordlists -> writes to public/wordlists
       - name: Build wordlists
+        if: github.event_name == 'push' # only build wordlist on pushes to main
         run: pnpm run wordlist:build
 
       - name: Build app
         run: pnpm run build
+
+      - name: Determine date-based version & release notes (push only)
+        id: version
+        if: github.event_name == 'push'
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          DATE=$(date +"%Y.%m.%d")
+          LAST_NUM=$(git tag -l "${DATE}_*" | sed -E 's/.*_([0-9]+)$/\1/' | sort -n | tail -n1 || true)
+          if [ -z "$LAST_NUM" ]; then BUILD_NUM=1; else BUILD_NUM=$((LAST_NUM+1)); fi
+          VERSION="${DATE}_${BUILD_NUM}"
+          echo "Computed version: $VERSION"
+
+          PREV_TAG=$(git tag -l | grep -E '^[0-9]{4}\.[0-9]{2}\.[0-9]{2}_[0-9]+$' | sort | tail -n1 || true)
+          if [ -n "$PREV_TAG" ]; then RANGE="$PREV_TAG..HEAD"; else RANGE="HEAD"; fi
+
+          if [ -n "$PREV_TAG" ]; then NEW_COMMITS=$(git rev-list --count "$RANGE"); else NEW_COMMITS=$(git rev-list --count HEAD); fi
+
+          # Skip if no new commits
+          if [ "$NEW_COMMITS" -eq 0 ]; then
+            echo "No new commits since previous tag ($PREV_TAG). Skipping release.";
+            echo "skip=true" >> $GITHUB_OUTPUT; echo "version=$VERSION" >> $GITHUB_OUTPUT; exit 0; fi
+
+          # Skip if only CHANGELOG.md changed since previous tag (single commit touching only changelog)
+          if [ -n "$PREV_TAG" ] && [ "$NEW_COMMITS" -eq 1 ]; then
+            CHANGED=$(git diff --name-only $RANGE || true)
+            NON_CHANGELOG=$(echo "$CHANGED" | grep -v '^CHANGELOG\.md$' || true)
+            if [ -z "$NON_CHANGELOG" ]; then
+              echo "Only CHANGELOG.md changed since previous tag ($PREV_TAG). Skipping release.";
+              echo "skip=true" >> $GITHUB_OUTPUT; echo "version=$VERSION" >> $GITHUB_OUTPUT; exit 0; fi
+          fi
+
+          {
+            echo "Release $VERSION"; echo
+            if [ -n "$PREV_TAG" ]; then echo "Compared to: $PREV_TAG"; echo; fi
+            echo "Commits:"; echo
+            while IFS=$'\t' read -r sha author subject; do
+              pr=""
+              if [[ $subject =~ \(#([0-9]+)\) ]]; then
+                num=${BASH_REMATCH[1]}; pr=" [#${num}](https://github.com/${REPO}/pull/${num})";
+              elif [[ $subject =~ [Pp]ull[[:space:]]request[[:space:]]#([0-9]+) ]]; then
+                num=${BASH_REMATCH[1]}; pr=" [#${num}](https://github.com/${REPO}/pull/${num})";
+              fi
+              echo "- $sha $author: $subject$pr"
+            done
+          } > RELEASE_NOTES.md
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [ -n "$PREV_TAG" ]; then echo "previous_tag=$PREV_TAG" >> $GITHUB_OUTPUT; fi
+
+      - name: Create Git tag (push only)
+        if: github.event_name == 'push' && steps.version.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ steps.version.outputs.version }}
+          git push origin ${{ steps.version.outputs.version }}
+
+      - name: Create GitHub Release (push only)
+        if: github.event_name == 'push' && steps.version.outputs.skip != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          body_path: RELEASE_NOTES.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifact (push only)
         if: github.event_name == 'push'
