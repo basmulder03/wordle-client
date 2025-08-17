@@ -1,3 +1,5 @@
+import {writeFileSync} from 'node:fs'
+import {resolve} from 'node:path'
 import {Readable} from 'node:stream'
 import {createGunzip} from 'node:zlib'
 import * as tar from 'tar'
@@ -64,6 +66,57 @@ async function extractScowlLines(buf: Buffer, subdirs: string[], classes: Set<nu
     return all
 }
 
+async function extractScowlDocs(buf: Buffer) {
+    const found: Record<string, string> = {}
+    const gunzip = createGunzip()
+    const extractor = new (tar as any).Parser()
+    await new Promise<void>((resolveDone, reject) => {
+        extractor.on('entry', (entry: any) => {
+            const p: string = String(entry.path || '')
+            const lower = p.toLowerCase()
+            const isTextCandidate = lower.endsWith('readme') || lower.endsWith('readme.txt') || lower.includes('/readme') || lower.includes('license') || lower.includes('copyright')
+            if (!isTextCandidate) return entry.resume()
+            let chunk = ''
+            entry.on('data', (d: Buffer) => {
+                chunk += d.toString('utf8')
+            })
+            entry.on('end', () => {
+                const trimmed = chunk.trim()
+                // Heuristic: prefer README that is not a script (no shebang) and contains SCOWL description
+                if (lower.includes('readme')) {
+                    const isScript = /^#!\//.test(trimmed)
+                    const looksLikeReadme = /SCOWL|Spell Checker Oriented Word Lists/i.test(trimmed)
+                    if (!found.readme && !isScript && (looksLikeReadme || trimmed.length > 200)) {
+                        found.readme = trimmed
+                    } else if (!found.readme && !isScript) {
+                        // keep as fallback (short) if nothing better later
+                        found.__readmeFallback = trimmed
+                    }
+                } else if ((lower.includes('license') || lower.includes('copyright')) && !found.license) {
+                    found.license = trimmed
+                }
+            })
+            entry.on('error', reject)
+        })
+        extractor.on('end', () => {
+            // finalize fallback if needed
+            if (!found.readme && found.__readmeFallback) found.readme = found.__readmeFallback
+            resolveDone()
+        })
+        extractor.on('error', reject)
+        Readable.from([buf]).pipe(gunzip).pipe(extractor)
+    })
+    // Write if discovered
+    if (found.readme) {
+        writeFileSync(resolve(process.cwd(), 'public', 'SCOWL-README.txt'), found.readme, 'utf8')
+        console.log('✓ Extracted SCOWL-README.txt')
+    }
+    if (found.license) {
+        writeFileSync(resolve(process.cwd(), 'public', 'SCOWL-LICENSE.txt'), found.license, 'utf8')
+        console.log('✓ Extracted SCOWL-LICENSE.txt')
+    }
+}
+
 export async function buildEnglish_SCOWL(ctx: BuildCtx, opts?: BuildOpts) {
     const url = opts?.url || process.env.EN_SCOWL_URL || 'https://netix.dl.sourceforge.net/project/wordlist/SCOWL/2020.12.07/scowl-2020.12.07.tar.gz?viasf=1'
     if (!url) throw new Error('EN_SCOWL_URL is required (URL to SCOWL .tar.gz)')
@@ -90,6 +143,13 @@ export async function buildEnglish_SCOWL(ctx: BuildCtx, opts?: BuildOpts) {
     const res = await fetch(url, {redirect: 'follow'})
     if (!res.ok) throw new Error(`SCOWL download failed: ${res.status} ${res.statusText}`)
     const buf = Buffer.from(await res.arrayBuffer())
+
+    // Attempt to extract README/license docs (best-effort)
+    try {
+        await extractScowlDocs(buf)
+    } catch (e) {
+        console.warn('SCOWL doc extraction failed:', (e as Error).message)
+    }
 
     // Extract two sets (solutions vs guesses)
     const linesSol = await extractScowlLines(buf, subDirs, classesSol)

@@ -117,7 +117,8 @@ export default function About() {
                 </p>
                 <ul className={s.links}>
                     <li><a href={`${BASE}ATTRIBUTION.md`} target="_blank" rel="noreferrer">ATTRIBUTION.md</a></li>
-                    <li><a href={`${BASE}LICENSE.txt`} target="_blank" rel="noreferrer">LICENSE.txt</a></li>
+                    <li><a href={`${BASE}OpenTaal-LICENSE.txt`} target="_blank"
+                           rel="noreferrer">OpenTaal-LICENSE.txt</a></li>
                     {/* SCOWL docs are optional; show if present */}
                     <li><a href={`${BASE}SCOWL-LICENSE.txt`} target="_blank" rel="noreferrer">SCOWL-LICENSE.txt</a></li>
                     <li><a href={`${BASE}SCOWL-README.txt`} target="_blank" rel="noreferrer">SCOWL-README.txt</a></li>

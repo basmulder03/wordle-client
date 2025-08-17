@@ -5,7 +5,7 @@ This project includes word lists derived from:
 - NL: https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt
 - EN: https://netix.dl.sourceforge.net/project/wordlist/SCOWL/2020.12.07/scowl-2020.12.07.tar.gz?viasf=1
 
-Generated: 2025-08-17T16:28:34.210Z
+Generated: 2025-08-17T16:38:16.059Z
 
 Derived files (in `public/wordlists/`):
 - `en_4_guesses.txt` — 3.107 words (guesses)
@@ -34,8 +34,8 @@ Derived files (in `public/wordlists/`):
 - `nl_9_solutions.txt` — 39.896 words (solutions)
 
 ## Notes
-- Dutch: OpenTaal — dual-licensed (BSD 3-Clause or CC BY 3.0). See `LICENSE.txt`.
-- English: SCOWL — public domain. You may include SCOWL README/license for clarity.
+- Dutch: OpenTaal — dual-licensed (BSD 3-Clause or CC BY 3.0). See `OpenTaal-LICENSE.txt`.
+- English: SCOWL — public domain. See `SCOWL-README.txt` and `SCOWL-LICENSE.txt`.
 
 ## Project license
 This application's code/assets are licensed separately from wordlists.

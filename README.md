@@ -45,8 +45,16 @@ pnpm run build
 
 ## Credits
 
-- Word lists from [OpenTaal](https://opentaal.org/) and other sources (see `public/ATTRIBUTION.md`)
+- Dutch word lists: [OpenTaal](https://opentaal.org/) (see `public/OpenTaal-LICENSE.txt`)
+- English word lists: SCOWL (public domain; extracted docs `SCOWL-README.txt` / `SCOWL-LICENSE.txt` if available)
+- See aggregated attribution in `public/ATTRIBUTION.md`
 
 ## License
 
-See `public/LICENSE.txt` for details.
+Application code is under the project license declared in `package.json`.
+Third‑party word list licenses are shipped separately:
+
+- `public/OpenTaal-LICENSE.txt`
+- `public/SCOWL-LICENSE.txt` (if extracted)
+- `public/SCOWL-README.txt` (if extracted)
+- `public/ATTRIBUTION.md`

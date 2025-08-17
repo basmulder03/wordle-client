@@ -41,16 +41,20 @@ async function main() {
     for (const lang of LANGS) {
         if (lang === 'nl') {
             results.push(await buildDutch_OpenTaal(ctx))
-            // Ensure OpenTaal LICENSE (dual license) is shipped
+            // Ensure OpenTaal LICENSE (dual license) is shipped under a name containing 'OpenTaal'
             await maybeDownload(
                 'https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/LICENSE.txt',
-                resolve(process.cwd(), 'public', 'LICENSE.txt')
+                resolve(process.cwd(), 'public', 'OpenTaal-LICENSE.txt')
             )
         } else if (lang === 'en') {
             results.push(await buildEnglish_SCOWL(ctx))
-            // Optional: ship SCOWL README/license text for clarity if provided via env
-            await maybeDownload(process.env.EN_SCOWL_LICENSE_URL, resolve(process.cwd(), 'public', 'SCOWL-LICENSE.txt'))
-            await maybeDownload(process.env.EN_SCOWL_README_URL, resolve(process.cwd(), 'public', 'SCOWL-README.txt'))
+            // SCOWL README & license are now auto-extracted inside buildEnglish_SCOWL; env URLs still supported as override
+            if (process.env.EN_SCOWL_LICENSE_URL) {
+                await maybeDownload(process.env.EN_SCOWL_LICENSE_URL, resolve(process.cwd(), 'public', 'SCOWL-LICENSE.txt'))
+            }
+            if (process.env.EN_SCOWL_README_URL) {
+                await maybeDownload(process.env.EN_SCOWL_README_URL, resolve(process.cwd(), 'public', 'SCOWL-README.txt'))
+            }
         } else {
             console.warn(`Unknown language '${lang}', skipping`)
         }

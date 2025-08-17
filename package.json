@@ -11,7 +11,7 @@
     "wordlist:build": "tsx scripts/build-wordlists.ts",
     "worldlist:build:nl": "cross-env LANGS=nl tsx scripts/build-wordlists.ts",
     "wordlist:build:en": "cross-env LANGS=en tsx scripts/build-wordlists.ts",
-    "wordlist:clean": "rimraf public/wordlists && npx mkdirp public/wordlists && rimraf public/LICENSE.txt && rimraf public/ATTRIBUTION.md",
+    "wordlist:clean": "rimraf public/wordlists && node -e \"require('fs').mkdirSync('public/wordlists',{recursive:true})\" && rimraf public/LICENSE.txt && rimraf public/OpenTaal-LICENSE.txt && rimraf public/SCOWL-LICENSE.txt && rimraf public/SCOWL-README.txt && rimraf public/ATTRIBUTION.md",
     "wordlist:refresh": "pnpm run wordlist:clean && pnpm run wordlist:build"
   },
   "dependencies": {

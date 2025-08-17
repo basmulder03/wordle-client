@@ -140,8 +140,8 @@ Derived files (in \`public/wordlists/\`):
 {{GENERATED_FILES}}
 
 ## Notes
-- Dutch: OpenTaal — dual-licensed (BSD 3-Clause or CC BY 3.0). See \`LICENSE.txt\`.
-- English: SCOWL — public domain. You may include SCOWL README/license for clarity.
+- Dutch: OpenTaal — dual-licensed (BSD 3-Clause or CC BY 3.0). See \`OpenTaal-LICENSE.txt\`.
+- English: SCOWL — public domain. See \`SCOWL-README.txt\` and \`SCOWL-LICENSE.txt\`.
 
 ## Project license
 This application's code/assets are licensed separately from wordlists.
