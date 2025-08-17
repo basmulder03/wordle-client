@@ -45,7 +45,7 @@ export function I18nProvider({children}: { children: ReactNode }) {
         const dict = DICTS[lang] || DICTS['en-US'];
         let s = dict[key] ?? key;
         for (const [k, v] of Object.entries(vars)) {
-            s = s.replace(new RegExp(`{{\\s*${k}\\s}}`, 'g'), String(v));
+            s = s.replace(new RegExp(`{{\\s*${k}\\s*}}`, 'g'), String(v));
         }
         return s;
     }, [lang]);
