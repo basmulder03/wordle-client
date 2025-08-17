@@ -38,6 +38,10 @@ function reconstructBoard(wordLen: number, guesses: string[], answer: string): C
     return board
 }
 
+function makeEmptyRow(len: number): Cell[] {
+    return Array.from({length: len}, () => ({ch: '', state: 'empty' as TileState}))
+}
+
 export function useGame(lang: string, mode: GameMode = 'daily') {
     const [ready, setReady] = useState(false)
     const [allowed, setAllowed] = useState<number[]>([])
