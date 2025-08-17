@@ -38,4 +38,15 @@ describe('evaluateGuess', () => {
             expect(res).toEqual(expand(pattern))
         })
     })
+
+    it('is case-insensitive', () => {
+        const lower = evaluateGuess('apple', 'panel').states
+        const upper = evaluateGuess('APPLE', 'PANEL').states
+        expect(upper).toEqual(lower)
+    })
+
+    it('handles length mismatch defensively (truncates to guess length)', () => {
+        const res = evaluateGuess('short', 'longerword').states
+        expect(res).toHaveLength(5)
+    })
 })
