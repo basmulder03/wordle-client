@@ -1,16 +1,16 @@
 import {useEffect} from "react";
-import Board from "./components/Board.tsx";
-import Keyboard from "./components/Keyboard.tsx";
-import {useGame} from "./hooks/useGame.ts";
-import {useI18n} from "./i18n/useI18n.ts";
-import styles from './styles/App.module.less';
-import type {CSSVars} from "./types/css-vars.ts";
+import Board from "../components/Board.tsx";
+import Keyboard from "../components/Keyboard.tsx";
+import {useGame} from "../hooks/useGame.ts";
+import {useI18n} from "../i18n/useI18n.ts";
+import styles from '../styles/App.module.less';
+import type {CSSVars} from "../types/css-vars.ts";
 
 export default function App() {
     const {t, lang, setLang} = useI18n();
     const {
         ready, allowed, wordLen, rows, activeRow, current, letterStates, outcome, wordlistHref,
-        setWordLen, handleKey, acknowledgeOutcome
+        setWordLen, handleKey, acknowledgeOutcome, invalidTick
     } = useGame(lang);
 
     // Physical keyboard listener
@@ -55,7 +55,7 @@ export default function App() {
             </header>
 
             <main className={styles.main} style={mainStyle}>
-                <Board rows={rows} activeRow={activeRow} current={current} wordLen={wordLen}/>
+                <Board rows={rows} activeRow={activeRow} current={current} wordLen={wordLen} invalidTick={invalidTick}/>
                 <Keyboard onKey={handleKey} letterStates={letterStates}/>
             </main>
 

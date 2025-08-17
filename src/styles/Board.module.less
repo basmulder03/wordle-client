@@ -35,3 +35,23 @@
     max-width: 360px;
   }
 }
+
+@keyframes rowShake {
+  10%, 90% {
+    transform: translateX(-2px)
+  }
+  20%, 80% {
+    transform: translateX(4px)
+  }
+  30%, 50%, 70% {
+    transform: translateX(-8px)
+  }
+  40%, 60% {
+    transform: translateX(8px)
+  }
+}
+
+.shakeRow {
+  animation: rowShake 0.6s ease both;
+}
+

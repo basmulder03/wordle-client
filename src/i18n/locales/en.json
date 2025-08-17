@@ -19,5 +19,7 @@
   "source": "Source",
   "generated": "Generated",
   "availableLengths": "Available lengths",
-  "files": "Files"
+  "files": "Files",
+  "solutions": "Solutions",
+  "guesses": "Guesses"
 }

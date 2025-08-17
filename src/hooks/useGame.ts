@@ -1,7 +1,14 @@
 // UI cell states
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {getDailyProgress, getPrefs, getStats, getToday, setDailyProgress, setPrefs, setStats} from "../lib/storage.ts";
-import {currentWordlistUrl, evaluateGuess, getAllowedLengths, loadManifest, pickDailyWord} from "../lib/wordlist.ts";
+import {
+    currentWordlistUrl,
+    evaluateGuess,
+    getAllowedLengths,
+    loadManifest,
+    loadWordlist,
+    pickDailyWord
+} from "../lib/wordlist.ts";
 import type {Cell, KeyState, Outcome, TileState} from '../types/game';
 
 
@@ -16,10 +23,12 @@ export function useGame(lang: string) {
     const [current, setCurrent] = useState('');
     const [letterStates, setLetterStates] = useState<Record<string, KeyState>>({});
     const [outcome, setOutcome] = useState<Outcome>(null);
+    const [validGuesses, setValidGuesses] = useState<Set<string>>(new Set());
+    const [invalidTick, setInvalidTick] = useState<number>(0);
 
     const today = useMemo(() => getToday(), [])
 
-    // Load manifest -> allowed lengths -> normalize selection -> load daily answer and progress
+    // Load manifest -> allowed lengths -> normalize selection -> load daily answer, guesses list and progress
     useEffect(() => {
         (async () => {
             setReady(false);
@@ -36,6 +45,13 @@ export function useGame(lang: string) {
 
             const a = await pickDailyWord(lang, normalizedLen);
             setAnswer(a);
+            // load guesses list (fallback handled in loadWordlist)
+            try {
+                const guessesList = await loadWordlist(lang, normalizedLen, 'guesses');
+                setValidGuesses(new Set(guessesList));
+            } catch {
+                setValidGuesses(new Set());
+            }
 
             // restore progress (scoped by day + lang + length)
             const prog = getDailyProgress(today, lang, normalizedLen);
@@ -66,7 +82,9 @@ export function useGame(lang: string) {
             setOutcome(null);
             setReady(true);
         })();
-    }, [lang, today, wordLen]) // re-run on language change, date change or word length change
+        // intentionally do NOT depend on wordLen; manual length change handled via changeLength
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lang, today])
 
     // Active row is the first row with any empty tiles
     const activeRow = useMemo(() => {
@@ -91,6 +109,11 @@ export function useGame(lang: string) {
     // Submit guess
     const submit = useCallback(() => {
         if (current.length !== wordLen) return;
+        // validate guess if we have a non-empty set (empty set means not loaded yet or failed)
+        if (validGuesses.size && !validGuesses.has(current)) {
+            setInvalidTick(Date.now());
+            return;
+        }
         const res = evaluateGuess(current, answer);
         const next = [...rows];
         const rowIdx = next.findIndex(r => r.some(c => c.ch === ''))
@@ -128,7 +151,7 @@ export function useGame(lang: string) {
         }
 
         setCurrent('');
-    }, [current, wordLen, answer, rows, mergeKeyboardStates, today, lang]);
+    }, [current, wordLen, answer, rows, mergeKeyboardStates, today, lang, validGuesses]);
 
     // Handle physical or on-screen keyboard input
     const handleKey = useCallback((key: string) => {
@@ -152,6 +175,12 @@ export function useGame(lang: string) {
         // new answer + fresh board for the new length
         const a = await pickDailyWord(lang, len);
         setAnswer(a);
+        try {
+            const guessesList = await loadWordlist(lang, len, 'guesses');
+            setValidGuesses(new Set(guessesList));
+        } catch {
+            setValidGuesses(new Set());
+        }
         setRows(Array.from({length: MAX_ATTEMPTS}, () => Array.from({length: len}, () => ({
             ch: '',
             state: 'empty' as TileState
@@ -162,7 +191,7 @@ export function useGame(lang: string) {
     }, [allowed, lang]);
 
     // For footer: link to the exact wordlist file in use
-    const wordlistHref = useMemo(() => currentWordlistUrl(lang, wordLen), [lang, wordLen]);
+    const wordlistHref = useMemo(() => currentWordlistUrl(lang, wordLen, 'solutions'), [lang, wordLen]);
 
     return {
         // State
@@ -171,5 +200,7 @@ export function useGame(lang: string) {
         setWordLen: changeLength,
         handleKey,
         acknowledgeOutcome: () => setOutcome(null),
+        // NEW
+        invalidTick,
     }
 }

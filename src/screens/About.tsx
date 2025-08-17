@@ -1,101 +1,154 @@
-import {useEffect, useState} from "react";
-import {Link} from "react-router";
-import {useDateFmt} from "../i18n/dates.ts";
-import {useI18n} from "../i18n/useI18n.ts";
-import {getAllowedLengths, loadManifest, localeToPrefix} from "../lib/wordlist.ts";
-import styles from '../styles/About.module.less';
+import {useEffect, useMemo, useState} from 'react'
+import {useDateFmt} from '../i18n/dates'
+import {useI18n} from '../i18n/useI18n'
+import {currentWordlistUrl, getAllowedLengths, loadManifest, localeToPrefix, type ManifestV2,} from '../lib/wordlist'
+import s from '../styles/About.module.less'
 
-type CountsRow = { file: string; count: number; }
+type Row = { length: number; solutions?: number; guesses?: number }
 
-const BASE = import.meta.env.BASE_URL || '/';
+const BASE = import.meta.env.BASE_URL || '/'
 
 export default function About() {
-    const {t, lang} = useI18n();
-    const {formatDate} = useDateFmt();
-    const [lengths, setLengths] = useState<number[]>([]);
-    const [counts, setCounts] = useState<CountsRow[]>([]);
-    const [source, setSource] = useState<string>('');
-    const [generatedAt, setGeneratedAt] = useState<string>('');
+    const {t, lang} = useI18n()
+    const {formatDate} = useDateFmt()
+    const [m, setM] = useState<ManifestV2 | null>(null)
+    const [rows, setRows] = useState<Row[]>([])
+    const [sourceLines, setSourceLines] = useState<string[]>([])
+
+    const prefix = useMemo(() => localeToPrefix(lang), [lang])
 
     useEffect(() => {
         (async () => {
-            const m = await loadManifest();
-            setLengths(getAllowedLengths(lang, m));
-            if (m?.counts) {
-                const prefix = localeToPrefix(lang);
-                const rows: CountsRow[] = Object.entries(m.counts)
-                    .filter(([file]) => file.startsWith(`${prefix}_`))
-                    .map(([file, count]) => ({file, count}))
-                    .sort((a, b) => a.file.localeCompare(b.file));
-                setCounts(rows);
+            const manifest = await loadManifest()
+            setM(manifest)
+
+            // Build per-length rows for this language from v2 (preferred) or fallback to legacy counts
+            const lengths = getAllowedLengths(lang, manifest)
+            const byLen: Record<number, Row> = {}
+            lengths.forEach(L => (byLen[L] = {length: L}))
+
+            if (manifest?.files?.[prefix]) {
+                const {solutions, guesses} = manifest.files[prefix]
+                for (const [file, count] of Object.entries(solutions || {})) {
+                    const match = file.match(/_(\d+)(?:\.txt)$/);
+                    if (!match) continue
+                    const L = parseInt(match[1], 10);
+                    if (!byLen[L]) byLen[L] = {length: L}
+                    byLen[L].solutions = count
+                }
+                for (const [file, count] of Object.entries(guesses || {})) {
+                    const match = file.match(/_(\d+)_guesses\.txt$/);
+                    if (!match) continue
+                    const L = parseInt(match[1], 10);
+                    if (!byLen[L]) byLen[L] = {length: L}
+                    byLen[L].guesses = count
+                }
             } else {
-                setCounts([]);
+                // legacy fallback: scan flat counts
+                const reSol = new RegExp(`^${prefix}_(\\d+)\\.txt$`)
+                const reGue = new RegExp(`^${prefix}_(\\d+)_guesses\\.txt$`)
+                for (const [file, count] of Object.entries(manifest?.counts || {})) {
+                    let m
+                    if ((m = file.match(reSol))) {
+                        const L = parseInt(m[1], 10);
+                        if (!byLen[L]) byLen[L] = {length: L}
+                        byLen[L].solutions = count
+                    } else if ((m = file.match(reGue))) {
+                        const L = parseInt(m[1], 10);
+                        if (!byLen[L]) byLen[L] = {length: L}
+                        byLen[L].guesses = count
+                    }
+                }
             }
-            setSource(m?.source ?? '');
-            setGeneratedAt(m?.generatedAt ?? '');
-        })();
-    }, [lang]);
+
+            setRows(Object.values(byLen).sort((a, b) => a.length - b.length))
+
+            if (Array.isArray(manifest?.sources)) {
+                setSourceLines(manifest.sources.map(s => `${s.lang.toUpperCase()}: ${s.url}`))
+            } else {
+                setSourceLines([])
+            }
+        })()
+    }, [lang, prefix])
+
+    const generatedAt = m?.generatedAt ? formatDate(m.generatedAt) : ''
 
     return (
-        <article className={styles.about}>
+        <article className={s.about}>
             <h1>{t('about')}</h1>
 
-            <section className={styles.card}>
+            <section className={s.card}>
                 <h2>{t('attribution')}</h2>
                 <p>
                     {t('attributionText')}{' '}
                     <a href={`${BASE}wordlists/manifest.json`} target="_blank" rel="noreferrer">manifest.json</a>.
                     {t('attributionLicense')}
                 </p>
-                <ul className={styles.links}>
+                <ul className={s.links}>
                     <li><a href={`${BASE}ATTRIBUTION.md`} target="_blank" rel="noreferrer">ATTRIBUTION.md</a></li>
                     <li><a href={`${BASE}LICENSE.txt`} target="_blank" rel="noreferrer">LICENSE.txt</a></li>
+                    {/* SCOWL docs are optional; show if present */}
+                    <li><a href={`${BASE}SCOWL-LICENSE.txt`} target="_blank" rel="noreferrer">SCOWL-LICENSE.txt</a></li>
+                    <li><a href={`${BASE}SCOWL-README.txt`} target="_blank" rel="noreferrer">SCOWL-README.txt</a></li>
                 </ul>
 
-                <dl className={styles.meta}>
-                    {source && (<>
+                <dl className={s.meta}>
+                    {!!sourceLines.length && (<>
                         <dt>{t('source')}</dt>
-                        <dd><a href={source} target="_blank" rel="noreferrer">{source}</a></dd>
+                        <dd>
+                            {sourceLines.map((line, i) => (
+                                <div key={i}><a href={line.split(': ').at(-1)} target="_blank"
+                                                rel="noreferrer">{line}</a></div>
+                            ))}
+                        </dd>
                     </>)}
-                    {generatedAt && (
-                        <>
-                            <dt>{t('generated')}</dt>
-                            <dd>{formatDate(generatedAt)}</dd>
-                        </>
-                    )}
+                    {generatedAt && (<>
+                        <dt>{t('generated')}</dt>
+                        <dd>{generatedAt}</dd>
+                    </>)}
                     <dt>{t('availableLengths')}</dt>
-                    <dd>{lengths.length ? lengths.join(', ') : '-'}</dd>
+                    <dd>{rows.length ? rows.map(r => r.length).join(', ') : '—'}</dd>
                 </dl>
             </section>
 
-            <section className={styles.card}>
-                <h2>{t('tech')}</h2>
-                <p>Vite · React · TypeScript · Less Modules · LocalStorage · i18n</p>
-                {!!counts.length && (
-                    <>
-                        <h3 className={styles.sub}>{t('files')}</h3>
-                        <table className={styles.table} aria-label="Wordlist files and counts">
-                            <thead>
-                            <tr>
-                                <th>File</th>
-                                <th>Count</th>
+            <section className={s.card}>
+                <h2>{t('files')}</h2>
+                <table className={s.table} aria-label="Wordlist counts per length and tier">
+                    <thead>
+                    <tr>
+                        <th>{t('length')}</th>
+                        <th>{t('solutions')}</th>
+                        <th>{t('guesses')}</th>
+                        <th>{t('files')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {rows.map(r => {
+                        const solHref = currentWordlistUrl(lang, r.length, 'solutions')
+                        const gueHref = currentWordlistUrl(lang, r.length, 'guesses')
+                        return (
+                            <tr key={r.length}>
+                                <td>{r.length}</td>
+                                <td>{r.solutions?.toLocaleString() ?? '—'}</td>
+                                <td>{r.guesses?.toLocaleString() ?? '—'}</td>
+                                <td className={s.fileLinks}>
+                                    <a href={solHref} target="_blank" rel="noreferrer">{`${prefix}_${r.length}.txt`}</a>
+                                    {r.guesses != null && (
+                                        <>
+                                            {' · '}
+                                            <a href={gueHref} target="_blank"
+                                               rel="noreferrer">{`${prefix}_${r.length}_guesses.txt`}</a>
+                                        </>
+                                    )}
+                                </td>
                             </tr>
-                            </thead>
-                            <tbody>
-                            {counts.map(r => (
-                                <tr key={r.file}>
-                                    <td><a href={`${BASE}wordlists/${r.file}`} target="_blank"
-                                           rel="noreferrer">{r.file}</a></td>
-                                    <td>{r.count.toLocaleString()}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </>
-                )}
+                        )
+                    })}
+                    </tbody>
+                </table>
             </section>
 
-            <p className={styles.back}><Link to='/'>{t('backHome')}</Link></p>
+            <p className={s.back}><a href={`${BASE}#/`}>{t('backHome')}</a></p>
         </article>
     )
 }

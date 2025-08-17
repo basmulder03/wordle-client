@@ -1,39 +1,34 @@
 # Attribution
 
-This project includes word lists derived from **OpenTaal**.
+This project includes word lists derived from:
 
-- Source: https://github.com/OpenTaal/opentaal-wordlist
-- Snapshot (commit): master
-- Fetched from: https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt
-- Generated: 2025-08-14T23:15:47.273Z
+- NL: https://raw.githubusercontent.com/OpenTaal/opentaal-wordlist/master/wordlist.txt
+- EN: https://netix.dl.sourceforge.net/project/wordlist/SCOWL/2020.12.07/scowl-2020.12.07.tar.gz?viasf=1
+
+Generated: 2025-08-17T15:53:30.447Z
 
 Derived files (in `public/wordlists/`):
-- `nl_4.txt` — 4.849 words
-- `nl_5.txt` — 9.723 words
-- `nl_6.txt` — 17.329 words
-- `nl_7.txt` — 25.277 words
-- `nl_8.txt` — 32.798 words
-- `nl_9.txt` — 39.896 words
+- `en_4_guesses.txt` — 3.107 words (guesses)
+- `en_4_solutions.txt` — 2.363 words (solutions)
+- `en_5_guesses.txt` — 6.379 words (guesses)
+- `en_5_solutions.txt` — 4.623 words (solutions)
+- `en_6_guesses.txt` — 10.700 words (guesses)
+- `en_6_solutions.txt` — 7.329 words (solutions)
+- `en_7_guesses.txt` — 15.284 words (guesses)
+- `en_7_solutions.txt` — 9.982 words (solutions)
+- `nl_4_guesses.txt` — 4.849 words (guesses)
+- `nl_4_solutions.txt` — 4.849 words (solutions)
+- `nl_5_guesses.txt` — 9.723 words (guesses)
+- `nl_5_solutions.txt` — 9.723 words (solutions)
+- `nl_6_guesses.txt` — 17.329 words (guesses)
+- `nl_6_solutions.txt` — 17.329 words (solutions)
+- `nl_7_guesses.txt` — 25.277 words (guesses)
+- `nl_7_solutions.txt` — 25.277 words (solutions)
 
-## License (OpenTaal)
-
-OpenTaal distributes its word list under a **dual license**. You may choose **either**:
-- **BSD 3-Clause License**, or
-- **Creative Commons Attribution 3.0 (CC BY 3.0)**
-
-We retain OpenTaal’s license file (`LICENSE.txt`) in this distribution.
-© OpenTaal — see `LICENSE.txt` for full terms.
-
-### Transformations applied
-- Lowercased all entries
-- Removed spaces/punctuation/hyphens
-- Stripped diacritics
-- Split into length-specific subsets
-
----
+## Notes
+- Dutch: OpenTaal — dual-licensed (BSD 3-Clause or CC BY 3.0). See `LICENSE.txt`.
+- English: SCOWL — public domain. You may include SCOWL README/license for clarity.
 
 ## Project license
-
-This application's own code and assets are licensed separately from the OpenTaal data.
+This application's code/assets are licensed separately from wordlists.
 Project license: **UNLICENSED**.
-

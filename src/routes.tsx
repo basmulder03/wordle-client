@@ -1,8 +1,8 @@
 import {BrowserRouter, Link, Route, Routes} from "react-router";
-import App from './App'
 import ThemeSwitcher from "./components/ThemeSwitcher.tsx";
 import {useI18n} from './i18n/useI18n'
 import About from './screens/About'
+import App from './screens/App.tsx'
 import nav from './styles/Nav.module.less'
 import page from './styles/Page.module.less'
 
