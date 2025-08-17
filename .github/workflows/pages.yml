@@ -44,6 +44,7 @@ jobs:
         run: pnpm test
 
       - name: Build wordlists
+        if: github.event_name == 'push' # only build wordlist on pushes to main
         run: pnpm run wordlist:build
 
       - name: Build app
@@ -116,26 +117,6 @@ jobs:
           body_path: RELEASE_NOTES.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update CHANGELOG (push only)
-        if: github.event_name == 'push' && steps.version.outputs.skip != 'true'
-        run: |
-          set -euo pipefail
-          VERSION=${{ steps.version.outputs.version }}
-          # Extract commit lines
-          COMMITS=$(grep '^-' RELEASE_NOTES.md || true)
-          NEW_SECTION="## $VERSION\n\n$COMMITS\n\n"
-          if [ -f CHANGELOG.md ]; then
-            printf "%s" "$NEW_SECTION" | cat - CHANGELOG.md > CHANGELOG.new && mv CHANGELOG.new CHANGELOG.md
-          else
-            printf "%s" "$NEW_SECTION" > CHANGELOG.md
-          fi
-          git config user.name "github-actions"
-          
-          git config user.email "github-actions@github.com"
-          git add CHANGELOG.md
-          git commit -m "chore: update CHANGELOG for $VERSION"
-          git push origin HEAD:main || git push origin HEAD
 
       - name: Upload artifact (push only)
         if: github.event_name == 'push'
