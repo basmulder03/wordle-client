@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint wordle-client",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "wordlist:build": "tsx scripts/build-wordlists.ts",
     "worldlist:build:nl": "cross-env LANGS=nl tsx scripts/build-wordlists.ts",
     "wordlist:build:en": "cross-env LANGS=en tsx scripts/build-wordlists.ts",
@@ -38,6 +40,7 @@
     "tsx": "^4.20.4",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vitest": "^3.2.4"
   }
 }

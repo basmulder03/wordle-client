@@ -13,7 +13,8 @@ export type ManifestV2 = {
     license?: string
 }
 
-const BASE = import.meta.env.BASE_URL || '/'
+// Adjust BASE resolution to be safe in non-Vite (Node test) contexts
+const BASE = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.BASE_URL) || '/'
 
 export function localeToPrefix(locale: string): string {
     const l = (locale || '').toLowerCase()
@@ -91,23 +92,37 @@ export async function pickDailyWord(locale: string, length: number): Promise<str
 }
 
 export function evaluateGuess(guess: string, answer: string): EvalResult {
-    const g = guess.split(''), a = answer.split('')
-    const states: LetterState[] = Array(g.length).fill('absent')
-    const used: boolean[] = Array(a.length).fill(false)
-    g.forEach((ch, i) => {
-        if (ch === a[i]) {
-            states[i] = 'correct';
-            used[i] = true
+    // Defensive: normalize to lower-case (wordlists already are)
+    const g = guess.toLowerCase().split('')
+    const a = answer.toLowerCase().split('')
+    const len = g.length
+    const states: LetterState[] = Array(len).fill('absent')
+
+    // Build frequency map of answer letters
+    const freq: Record<string, number> = {}
+    for (let i = 0; i < len; i++) {
+        const ch = a[i]
+        freq[ch] = (freq[ch] || 0) + 1
+    }
+
+    // First pass: mark correct letters and decrement freq
+    for (let i = 0; i < len; i++) {
+        if (g[i] === a[i]) {
+            states[i] = 'correct'
+            freq[g[i]]!--
         }
-    })
-    g.forEach((ch, i) => {
-        if (states[i] === 'correct') return
-        const idx = a.findIndex((ach, j) => !used[j] && ach === ch)
-        if (idx !== -1) {
-            states[i] = 'present';
-            used[idx] = true
+    }
+
+    // Second pass: mark present (only if remaining freq > 0)
+    for (let i = 0; i < len; i++) {
+        if (states[i] === 'correct') continue
+        const ch = g[i]
+        if (freq[ch] > 0) {
+            states[i] = 'present'
+            freq[ch]!--
         }
-    })
+    }
+
     return {states}
 }
 

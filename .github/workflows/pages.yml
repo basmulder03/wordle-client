@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -33,19 +35,27 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - run: pnpm install --frozen-lockfile
+      - name: Run unit tests
+        run: pnpm test
 
       # Generate wordlists -> writes to public/wordlists
-      - run: pnpm run wordlist:build
+      - name: Build wordlists
+        run: pnpm run wordlist:build
 
-      - run: pnpm run build
+      - name: Build app
+        run: pnpm run build
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload artifact (push only)
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
   deploy:
+    if: github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
     environment:
