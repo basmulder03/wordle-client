@@ -27,5 +27,6 @@
   "mode": "Mode",
   "daily": "Daily",
   "freeplay": "Free Play",
-  "playAgain": "Play Again"
+  "playAgain": "Play Again",
+  "close": "Close"
 }

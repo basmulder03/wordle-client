@@ -21,21 +21,28 @@ export default function App() {
         return () => window.removeEventListener('keydown', onKey);
     }, [handleKey]);
 
-    // Outcome alerts (with timing)
-    useEffect(() => {
-        if (!outcome) return;
-        const seconds = (outcome.durationMs / 1000).toFixed(1);
-        if (outcome.type === 'win') {
-            alert(t('winTimed', {seconds}));
-        } else {
-            alert(t('loseTimed', {word: outcome.answer, seconds}));
-        }
-        acknowledgeOutcome();
-    }, [acknowledgeOutcome, outcome, t]);
-
     const mainStyle: CSSVars<'--len'> = {'--len': wordLen};
 
     if (!ready) return <p className={styles.app}>{t('loading')}</p>
+
+    const outcomeSeconds = outcome ? (outcome.durationMs / 1000).toFixed(1) : '';
+    const outcomeMessage = outcome ? (outcome.type === 'win'
+        ? t('winTimed', {seconds: outcomeSeconds})
+        : t('loseTimed', {word: outcome.answer, seconds: outcomeSeconds})) : '';
+
+    // Close on ESC when modal open
+    useEffect(() => {
+        if (!outcome) return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') acknowledgeOutcome();
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [outcome, acknowledgeOutcome]);
+
+    if (!ready) {
+        return <p className={styles.app}>{t('loading')}</p>
+    }
 
     return (
         <div className={styles.app}>
@@ -89,6 +96,32 @@ export default function App() {
                     {t('wordlistLink')}
                 </a>
             </footer>
+
+            {outcome && (
+                <div
+                    className={styles.modalOverlay}
+                    role="presentation"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) acknowledgeOutcome();
+                    }}
+                >
+                    <div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="outcome-title">
+                        <h2 id="outcome-title">{outcome.type === 'win' ? t('win') : t('lose', {word: outcome.answer})}</h2>
+                        <p>{outcomeMessage}</p>
+                        <div className={styles.modalActions}>
+                            {mode === 'freeplay' && (
+                                <button type="button" onClick={() => {
+                                    acknowledgeOutcome();
+                                    newFreeplayGame();
+                                }}>
+                                    {t('playAgain')}
+                                </button>
+                            )}
+                            <button type="button" onClick={acknowledgeOutcome}>{t('close')}</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
