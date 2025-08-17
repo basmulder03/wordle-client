@@ -1,7 +1,8 @@
 import {memo} from "react";
 import styles from "../styles/Board.module.less";
 import type {CSSVars} from "../types/css-vars.ts";
-import Tile, {type TileState} from "./Tile.tsx";
+import type {TileState} from "../types/game.ts";
+import Tile from "./Tile.tsx";
 
 export type Cell = { ch: string; state: TileState };
 
