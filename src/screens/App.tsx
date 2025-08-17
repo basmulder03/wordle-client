@@ -23,8 +23,6 @@ export default function App() {
 
     const mainStyle: CSSVars<'--len'> = {'--len': wordLen};
 
-    if (!ready) return <p className={styles.app}>{t('loading')}</p>
-
     const outcomeSeconds = outcome ? (outcome.durationMs / 1000).toFixed(1) : '';
     const outcomeMessage = outcome ? (outcome.type === 'win'
         ? t('winTimed', {seconds: outcomeSeconds})
