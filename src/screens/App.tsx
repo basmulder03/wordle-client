@@ -102,12 +102,7 @@ export default function App() {
                     onClick={(e) => {
                         if (e.target === e.currentTarget) acknowledgeOutcome();
                     }}
-                    role="button"
-                    aria-label="Close modal"
-                    tabIndex={0}
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) acknowledgeOutcome();
-                    }}
+                >
                     <div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="outcome-title">
                         <h2 id="outcome-title">{outcome.type === 'win' ? t('win') : t('lose', {word: outcome.answer})}</h2>
                         <p>{outcomeMessage}</p>
