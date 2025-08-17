@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import Board from "../components/Board.tsx";
 import Keyboard from "../components/Keyboard.tsx";
 import {useGame} from "../hooks/useGame.ts";
@@ -8,10 +8,11 @@ import type {CSSVars} from "../types/css-vars.ts";
 
 export default function App() {
     const {t, lang, setLang} = useI18n();
+    const [mode, setMode] = useState<'daily' | 'freeplay'>('daily');
     const {
         ready, allowed, wordLen, rows, activeRow, current, letterStates, outcome, wordlistHref,
-        setWordLen, handleKey, acknowledgeOutcome, invalidTick
-    } = useGame(lang);
+        setWordLen, handleKey, acknowledgeOutcome, invalidTick, newFreeplayGame
+    } = useGame(lang, mode);
 
     // Physical keyboard listener
     useEffect(() => {
@@ -34,9 +35,20 @@ export default function App() {
 
     return (
         <div className={styles.app}>
+            <div className={styles.modeSwitch} role="tablist" aria-label={t('mode')}>
+                <button
+                    role="tab" aria-selected={mode === 'daily'}
+                    className={`${styles.tab} ${mode === 'daily' ? styles.tabActive : ''}`}
+                    onClick={() => setMode('daily')}
+                >{t('daily')}</button>
+                <button
+                    role="tab" aria-selected={mode === 'freeplay'}
+                    className={`${styles.tab} ${mode === 'freeplay' ? styles.tabActive : ''}`}
+                    onClick={() => setMode('freeplay')}
+                >{t('freeplay')}</button>
+            </div>
             <header className={styles.header}>
                 <h1>{t('title')}</h1>
-
                 <label>{t('length')}&nbsp;
                     <select
                         value={wordLen}
@@ -45,7 +57,6 @@ export default function App() {
                         {allowed.map(n => <option key={n} value={n}>{n}</option>)}
                     </select>
                 </label>
-
                 <label>{t('language')}&nbsp;
                     <select value={lang} onChange={e => setLang(e.target.value)}>
                         <option value="nl">Nederlands</option>
@@ -53,10 +64,14 @@ export default function App() {
                     </select>
                 </label>
             </header>
-
             <main className={styles.main} style={mainStyle}>
                 <Board rows={rows} activeRow={activeRow} current={current} wordLen={wordLen} invalidTick={invalidTick}/>
                 <Keyboard onKey={handleKey} letterStates={letterStates}/>
+                {mode === 'freeplay' && (
+                    <div className={styles.actions}>
+                        <button type="button" onClick={newFreeplayGame}>{t('playAgain')}</button>
+                    </div>
+                )}
             </main>
 
             <footer className={styles.footer}>

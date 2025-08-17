@@ -21,5 +21,9 @@
   "availableLengths": "Available lengths",
   "files": "Files",
   "solutions": "Solutions",
-  "guesses": "Guesses"
+  "guesses": "Guesses",
+  "mode": "Mode",
+  "daily": "Daily",
+  "freeplay": "Free Play",
+  "playAgain": "Play Again"
 }

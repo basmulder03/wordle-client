@@ -101,3 +101,9 @@ export function evaluateGuess(guess: string, answer: string): EvalResult {
 export function currentWordlistUrl(locale: string, length: number, kind: 'solutions' | 'guesses' = 'solutions'): string {
     return `${BASE}wordlists/${filenameFor(locale, length, kind)}`
 }
+
+export async function pickRandomWord(locale: string, length: number): Promise<string> {
+    const list = await loadWordlist(locale, length, 'solutions')
+    const idx = Math.floor(Math.random() * list.length)
+    return list[idx]
+}

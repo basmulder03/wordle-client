@@ -21,5 +21,9 @@
   "availableLengths": "Beschikbare lengtes",
   "files": "Bestanden",
   "solutions": "Oplossingen",
-  "guesses": "Gokwoorden"
+  "guesses": "Gokwoorden",
+  "mode": "Modus",
+  "daily": "Dagelijks",
+  "freeplay": "Vrij spel",
+  "playAgain": "Nog een spel"
 }

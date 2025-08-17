@@ -1,3 +1,5 @@
+import type {GameMode} from "../types/game.ts";
+
 export type Prefs = {
     language?: string;        // e.g., 'nl-NL' | 'en-US'
     wordLength: number;       // last chosen length
@@ -5,13 +7,15 @@ export type Prefs = {
     sfx?: boolean;
 };
 
-export type Stats = {
+export type ModeStats = {
     gamesPlayed: number;
     wins: number;
     currentStreak: number;
     maxStreak: number;
-    guessDistribution?: number[]; // optional histogram by attempt
-};
+    guessDistribution?: number[];
+}
+
+export type Stats = Record<GameMode, ModeStats>;
 
 export type DailyProgress = {
     answerHash: string; // hash/fingerprint to detect mismatches
@@ -20,13 +24,20 @@ export type DailyProgress = {
     keyboard: Record<string, string>;
 };
 
+export type FreeplayProgress = {
+    answer: string;
+    guesses: string[];
+    board: { ch: string; state: string }[][];
+    keyboard: Record<string, string>;
+}
+
 // -------------------------------
 // Keys
 // -------------------------------
 const PREFS_KEY = 'prefs';
 const STATS_KEY = 'stats';
-const DAILY_KEY_PREFIX = 'daily:'; // old style: daily:YYYY-MM-DD
-// new style:  daily:YYYY-MM-DD:<lang>:<len>, e.g. daily:2025-08-14:nl-NL:5
+const DAILY_KEY_PREFIX = 'daily:';
+const FREEPLAY_KEY_PREFIX = 'freeplay:';
 
 // -------------------------------
 // JSON utils
@@ -63,72 +74,60 @@ export function setPrefs(p: Prefs) {
 // -------------------------------
 // Stats
 // -------------------------------
+function emptyModeStats(): ModeStats {
+    return {gamesPlayed: 0, wins: 0, currentStreak: 0, maxStreak: 0, guessDistribution: [0, 0, 0, 0, 0, 0]}
+}
+
 export function getStats(): Stats {
-    return getJSON<Stats>(STATS_KEY, {
-        gamesPlayed: 0,
-        wins: 0,
-        currentStreak: 0,
-        maxStreak: 0,
-        guessDistribution: [0, 0, 0, 0, 0, 0]
-    });
+    const raw = getJSON<Stats | null>(STATS_KEY, null);
+    if (raw) return raw;
+    return {daily: emptyModeStats(), freeplay: emptyModeStats()};
 }
 
-export function setStats(s: Stats) {
-    setJSON(STATS_KEY, s);
+export function setStats(stats: Stats) {
+    setJSON(STATS_KEY, stats);
 }
 
-// -------------------------------
-// Daily Progress (per lang + length)
-// -------------------------------
-
-/**
- * Returns today's YYYY-MM-DD string (local time).
- * If you prefer UTC, change to new Date().toISOString().slice(0,10).
- */
+// ---------------- Daily Progress (per lang + len) ----------------
 export function getToday(): string {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
+    const d = new Date()
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
 }
 
-/**
- * Build the per-day storage key scoped by language and length.
- * Example: daily:2025-08-14:nl-NL:5
- */
 export function dailyKeyFor(dayISO: string, language: string, wordLength: number): string {
-    return `${DAILY_KEY_PREFIX}${dayISO}:${language}:${wordLength}`;
+    return `${DAILY_KEY_PREFIX}${dayISO}:${language}:${wordLength}`
 }
 
-/**
- * Legacy key (pre-scoped) for backward compatibility:
- * daily:YYYY-MM-DD
- */
-function legacyDailyKey(dayISO: string): string {
-    return `${DAILY_KEY_PREFIX}${dayISO}`;
-}
-
-/**
- * Read daily progress for given day/lang/len.
- * If no scoped entry exists but a legacy key does, migrate it on the fly.
- */
 export function getDailyProgress(dayISO: string, language: string, wordLength: number): DailyProgress | null {
-    const scopedKey = dailyKeyFor(dayISO, language, wordLength);
-    const scoped = getJSON<DailyProgress | null>(scopedKey, null);
-    if (scoped) return scoped;
-
-    // Backward-compat migration once:
-    const legacy = getJSON<DailyProgress | null>(legacyDailyKey(dayISO), null);
-    if (legacy) {
-        // Save under new scoped key and keep legacy as-is (or remove it—your call).
-        setJSON(scopedKey, legacy);
-        return legacy;
-    }
-    return null;
+    const scopedKey = dailyKeyFor(dayISO, language, wordLength)
+    const scoped = getJSON<DailyProgress | null>(scopedKey, null)
+    if (scoped) return scoped
+    return null
 }
 
 export function setDailyProgress(dayISO: string, language: string, wordLength: number, p: DailyProgress) {
-    const key = dailyKeyFor(dayISO, language, wordLength);
-    setJSON(key, p);
+    setJSON(dailyKeyFor(dayISO, language, wordLength), p)
+}
+
+// ---------------- Freeplay Progress (per lang + len) ----------------
+function freeplayKey(language: string, wordLength: number): string {
+    return `${FREEPLAY_KEY_PREFIX}${language}:${wordLength}`
+}
+
+export function getFreeplayProgress(language: string, wordLength: number): FreeplayProgress | null {
+    return getJSON<FreeplayProgress | null>(freeplayKey(language, wordLength), null)
+}
+
+export function setFreeplayProgress(language: string, wordLength: number, p: FreeplayProgress) {
+    setJSON(freeplayKey(language, wordLength), p)
+}
+
+export function clearFreeplayProgress(language: string, wordLength: number) {
+    try {
+        localStorage.removeItem(freeplayKey(language, wordLength))
+    } catch {
+    }
 }

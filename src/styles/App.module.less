@@ -82,3 +82,28 @@
     max-width: 360px;
   }
 }
+
+.modeSwitch {
+  display: flex;
+  gap: @gap;
+  justify-content: center;
+  margin-top: @gap;
+}
+
+.tab {
+  padding: 0.35rem 0.75rem;
+  border-radius: @radius;
+  border: 1px solid fade(@fg, 35%);
+  background: @bg-light;
+  color: @fg;
+  cursor: pointer;
+}
+
+.tabActive {
+  background: fade(@fg, 15%);
+}
+
+.actions {
+  margin-top: 0.5rem;
+}
+
