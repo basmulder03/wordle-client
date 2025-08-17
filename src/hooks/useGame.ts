@@ -2,13 +2,8 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {getDailyProgress, getPrefs, getStats, getToday, setDailyProgress, setPrefs, setStats} from "../lib/storage.ts";
 import {currentWordlistUrl, evaluateGuess, getAllowedLengths, loadManifest, pickDailyWord} from "../lib/wordlist.ts";
+import type {Cell, KeyState, Outcome, TileState} from '../types/game';
 
-export type TileState = 'empty' | 'correct' | 'present' | 'absent';
-export type Cell = { ch: string; state: TileState };
-export type Outcome = { type: 'win' | 'lose'; answer: string; } | null;
-
-// Keyboard tint for a..z
-type KeyState = 'correct' | 'present' | 'absent' | undefined;
 
 const MAX_ATTEMPTS = 6;
 

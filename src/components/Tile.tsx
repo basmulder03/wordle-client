@@ -1,10 +1,9 @@
 import {type CSSProperties, memo, useMemo} from "react";
 import styles from "../styles/Tile.module.less";
 import type {CSSVars} from "../types/css-vars.ts";
+import type {TileState} from '../types/game';
 
-export type TileState = 'empty' | 'correct' | 'present' | 'absent';
-
-type AnimFlags = {
+export type AnimFlags = {
     /** card-flip animation (use for reveal) */
     flip?: boolean;
     /** quick scale-up (use when typing a new letter) */

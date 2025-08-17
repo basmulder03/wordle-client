@@ -1,8 +1,7 @@
 import {memo} from "react";
 import {useI18n} from "../i18n/useI18n.ts";
 import styles from "../styles/Keyboard.module.less";
-
-export type KeyState = 'correct' | 'present' | 'absent' | undefined;
+import type {KeyState} from '../types/game';
 
 type Props = {
     onKey: (key: string) => void;

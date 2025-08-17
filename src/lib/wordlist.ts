@@ -1,5 +1,4 @@
-export type LetterState = 'correct' | 'present' | 'absent' | 'empty';
-export type EvalResult = { states: LetterState[] }
+import type {EvalResult, LetterState} from '../types/game';
 
 export type Manifest = {
     source: string;
