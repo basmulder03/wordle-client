@@ -22,6 +22,8 @@ export type DailyProgress = {
     guesses: string[];  // submitted guesses
     board: { ch: string; state: string }[][];
     keyboard: Record<string, string>;
+    startedAt?: number; // epoch ms when this daily game started
+    finishedAt?: number; // epoch ms when completed
 };
 
 export type FreeplayProgress = {
@@ -29,6 +31,8 @@ export type FreeplayProgress = {
     guesses: string[];
     board: { ch: string; state: string }[][];
     keyboard: Record<string, string>;
+    startedAt?: number;
+    finishedAt?: number;
 }
 
 // -------------------------------

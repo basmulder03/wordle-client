@@ -21,11 +21,15 @@ export default function App() {
         return () => window.removeEventListener('keydown', onKey);
     }, [handleKey]);
 
-    // Outcome alerts
+    // Outcome alerts (with timing)
     useEffect(() => {
         if (!outcome) return;
-        if (outcome.type === 'win') alert(t('win'))
-        else alert(t('lose', {word: outcome.answer}));
+        const seconds = (outcome.durationMs / 1000).toFixed(1);
+        if (outcome.type === 'win') {
+            alert(t('winTimed', {seconds}));
+        } else {
+            alert(t('loseTimed', {word: outcome.answer, seconds}));
+        }
         acknowledgeOutcome();
     }, [acknowledgeOutcome, outcome, t]);
 

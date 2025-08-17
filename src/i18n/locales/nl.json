@@ -8,6 +8,8 @@
   "backspace": "Backspace",
   "win": "Gewonnen! 🎉",
   "lose": "Helaas. Het woord was: {{word}}",
+  "winTimed": "Gewonnen in {{seconds}}s! 🎉",
+  "loseTimed": "Helaas ({{seconds}}s). Het woord was: {{word}}",
   "wordlistLink": "Woordenlijst & Vermelding",
   "home": "Start",
   "about": "Over",
