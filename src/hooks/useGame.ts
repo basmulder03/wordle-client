@@ -29,11 +29,11 @@ function reconstructBoard(wordLen: number, guesses: string[], answer: string): C
     for (let i = 0; i < guesses.length && i < MAX_ATTEMPTS; i++) {
         const g = guesses[i]
         const res = evaluateGuess(g, answer)
-        board.push(g.split('').map((ch, idx) => ({ch, state: res.states[idx] as TileState})))
+        board.push(g.split('').map((ch, idx) => ({ch, state: (res.states[idx] as TileState) || 'empty'})))
     }
     // Fill remaining rows
     while (board.length < MAX_ATTEMPTS) {
-        board.push(Array.from({length: wordLen}, () => ({ch: '', state: 'empty' as TileState})))
+        board.push(makeEmptyRow(wordLen))
     }
     return board
 }
