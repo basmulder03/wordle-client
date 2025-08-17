@@ -11,7 +11,7 @@ import {buildEnglish_SCOWL} from './sources/en-scowl'
 import {buildDutch_OpenTaal} from './sources/nl-opentaal'
 
 const LANGS = (process.env.LANGS || 'nl,en').split(',').map(s => s.trim()).filter(Boolean)
-const LENGTHS = (process.env.LENGTHS || '4,5,6,7').split(',').map(s => parseInt(s.trim(), 10)).filter(Number.isFinite)
+const LENGTHS = (process.env.LENGTHS || '4,5,6,7,8,9').split(',').map(s => parseInt(s.trim(), 10)).filter(Number.isFinite)
 const OUT_DIR = resolve(process.cwd(), 'public/wordlists')
 const nowISO = new Date().toISOString()
 const projectLicense = process.env.PROJECT_LICENSE || readPackageLicense() || 'UNLICENSED'

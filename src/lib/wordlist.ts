@@ -40,7 +40,8 @@ export function getAllowedLengths(locale: string, m: ManifestV2 | null): number[
     const fromV2 = m.lengthsByLang?.[prefix]
     if (fromV2?.length) return [...new Set(fromV2)].sort((a, b) => a - b)
 
-    const re = new RegExp(`^${prefix}_(\\d+)(?:_guesses)?\\.txt$`)
+    // Accept both old (prefix_len.txt) and new (prefix_len_solutions.txt / _guesses) naming
+    const re = new RegExp(`^${prefix}_(\\d+)(?:_(?:guesses|solutions))?\\.txt$`)
     const set = new Set<number>()
     for (const k of Object.keys(m.counts || {})) {
         const match = k.match(re);
@@ -53,14 +54,26 @@ export function getAllowedLengths(locale: string, m: ManifestV2 | null): number[
 export function filenameFor(locale: string, length: number, kind: 'solutions' | 'guesses' = 'solutions'): string {
     const prefix = localeToPrefix(locale)
     return kind === 'solutions'
-        ? `${prefix}_${length}.txt`
+        ? `${prefix}_${length}_solutions.txt`
         : `${prefix}_${length}_guesses.txt`
 }
 
 export async function loadWordlist(locale: string, length: number, kind: 'solutions' | 'guesses' = 'solutions'): Promise<string[]> {
     const file = filenameFor(locale, length, kind)
-    const url = `${BASE}wordlists/${file}`
-    const res = await fetch(url, {cache: 'no-cache'})
+    let url = `${BASE}wordlists/${file}`
+    let res = await fetch(url, {cache: 'no-cache'})
+
+    // Backward compatibility: try old solutions filename without _solutions suffix
+    if (!res.ok && kind === 'solutions') {
+        const legacy = `${localeToPrefix(locale)}_${length}.txt`
+        const legacyUrl = `${BASE}wordlists/${legacy}`
+        const legacyRes = await fetch(legacyUrl, {cache: 'no-cache'})
+        if (legacyRes.ok) {
+            res = legacyRes
+            url = legacyUrl
+        }
+    }
+
     if (!res.ok) {
         // graceful fallback: if guesses missing, use solutions
         if (kind === 'guesses') return loadWordlist(locale, length, 'solutions')
