@@ -53,7 +53,7 @@ function setJSON<T>(key: string, value: T) {
 // Prefs
 // -------------------------------
 export function getPrefs(): Prefs {
-    return getJSON<Prefs>(PREFS_KEY, {wordLength: 5, language: 'nl-NL', theme: 'light', sfx: true});
+    return getJSON<Prefs>(PREFS_KEY, {wordLength: 5, language: 'nl-NL', theme: 'auto', sfx: true});
 }
 
 export function setPrefs(p: Prefs) {
