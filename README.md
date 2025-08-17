@@ -1,5 +1,29 @@
 # Wordle Client
 
+<p align="left">
+  <a href="https://github.com/basmulder03/wordle-client/actions/workflows/pages.yml">
+    <img alt="Build" src="https://github.com/basmulder03/wordle-client/actions/workflows/pages.yml/badge.svg" />
+  </a>
+  <a href="https://github.com/basmulder03/wordle-client/commits/main">
+    <img alt="Last Commit" src="https://img.shields.io/github/last-commit/basmulder03/wordle-client" />
+  </a>
+  <a href="https://github.com/basmulder03/wordle-client/tags">
+    <img alt="Tag" src="https://img.shields.io/github/v/tag/basmulder03/wordle-client?label=tag&sort=semver" />
+  </a>
+  <a href="https://github.com/basmulder03/wordle-client/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/basmulder03/wordle-client" />
+  </a>
+  <a href="https://github.com/basmulder03/wordle-client/issues">
+    <img alt="Open Issues" src="https://img.shields.io/github/issues/basmulder03/wordle-client" />
+  </a>
+  <img alt="Package Version" src="https://img.shields.io/github/package-json/v/basmulder03/wordle-client?color=blue" />
+  <img alt="Renovate" src="https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot" />
+  <img alt="Node Version" src="https://img.shields.io/badge/node-24.x-brightgreen" />
+  <img alt="Code Size" src="https://img.shields.io/github/languages/code-size/basmulder03/wordle-client" />
+  <img alt="Lines of Code" src="https://img.shields.io/tokei/lines/github/basmulder03/wordle-client?label=loc" />
+  <a href="https://github.com/basmulder03/wordle-client/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/basmulder03/wordle-client" /></a>
+</p>
+
 A Wordle game client built with React, TypeScript, and Vite. Supports multiple languages and themes.
 
 ## Features
