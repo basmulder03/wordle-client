@@ -126,7 +126,8 @@ jobs:
           COMMITS=$(grep '^-' RELEASE_NOTES.md || true)
           NEW_SECTION="## $VERSION\n\n$COMMITS\n\n"
           if [ -f CHANGELOG.md ]; then
-            printf "%s" "$NEW_SECTION" | cat - CHANGELOG.md > CHANGELOG.new && mv CHANGELOG.new CHANGELOG.md
+            tmpfile=$(mktemp CHANGELOG.md.XXXXXX)
+            printf "%s" "$NEW_SECTION" | cat - CHANGELOG.md > "$tmpfile" && mv "$tmpfile" CHANGELOG.md
           else
             printf "%s" "$NEW_SECTION" > CHANGELOG.md
           fi
