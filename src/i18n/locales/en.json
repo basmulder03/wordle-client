@@ -8,6 +8,8 @@
   "backspace": "Backspace",
   "win": "You win! 🎉",
   "lose": "Sorry. The word was: {{word}}",
+  "winTimed": "You win in {{seconds}}s! 🎉",
+  "loseTimed": "Sorry ({{seconds}}s). The word was: {{word}}",
   "wordlistLink": "Wordlist & Attribution",
   "home": "Home",
   "about": "About",

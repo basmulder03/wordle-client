@@ -37,6 +37,7 @@ export function useGame(lang: string, mode: GameMode = 'daily') {
 
     const [validGuesses, setValidGuesses] = useState<Set<string>>(new Set())
     const [invalidTick, setInvalidTick] = useState<number>(0)
+    const [startedAt, setStartedAt] = useState<number | null>(null)
 
     const today = useMemo(getToday, [])
     const activeRow = useMemo(() => rows.findIndex(r => r.some(c => c.ch === '')), [rows])
@@ -68,9 +69,22 @@ export function useGame(lang: string, mode: GameMode = 'daily') {
                 if (prog?.board && prog?.guesses) {
                     setRows(prog.board as Cell[][])
                     rebuildKeyTintsFromBoard(prog.board as Cell[][], prog.guesses)
+                    setStartedAt(prog.startedAt ?? Date.now())
+                    if (!prog.startedAt) {
+                        setDailyProgress(today, lang, normalizedLen, {...prog, startedAt: Date.now()})
+                    }
                 } else {
                     freshBoard(normalizedLen, setRows)
                     setLetterStates({})
+                    const now = Date.now()
+                    setStartedAt(now)
+                    setDailyProgress(today, lang, normalizedLen, {
+                        answerHash: `len:${a.length}`,
+                        guesses: [],
+                        board: [],
+                        keyboard: {},
+                        startedAt: now
+                    })
                 }
             } else {
                 // freeplay: resume if unfinished; otherwise pick random
@@ -79,12 +93,24 @@ export function useGame(lang: string, mode: GameMode = 'daily') {
                     setAnswer(prog.answer)
                     setRows(prog.board as Cell[][])
                     rebuildKeyTintsFromBoard(prog.board as Cell[][], prog.guesses)
+                    setStartedAt(prog.startedAt ?? Date.now())
+                    if (!prog.startedAt) {
+                        setFreeplayProgress(lang, normalizedLen, {...prog, startedAt: Date.now()})
+                    }
                 } else {
                     const a = await pickRandomWord(lang, normalizedLen)
                     setAnswer(a)
                     freshBoard(normalizedLen, setRows)
                     setLetterStates({})
-                    setFreeplayProgress(lang, normalizedLen, {answer: a, guesses: [], board: [], keyboard: {}})
+                    const now = Date.now()
+                    setStartedAt(now)
+                    setFreeplayProgress(lang, normalizedLen, {
+                        answer: a,
+                        guesses: [],
+                        board: [],
+                        keyboard: {},
+                        startedAt: now
+                    })
                 }
             }
 
@@ -120,31 +146,72 @@ export function useGame(lang: string, mode: GameMode = 'daily') {
         setRows(next)
         mergeKeyboardStates(current, res.states as TileState[], setLetterStates)
 
-        // persist progress per mode
+        // persist progress per mode (without finishedAt yet)
         if (mode === 'daily') {
             const guesses = [...(getDailyProgress(today, lang, wordLen)?.guesses ?? []), current]
+            const existing = getDailyProgress(today, lang, wordLen)
             setDailyProgress(today, lang, wordLen, {
                 answerHash: `len:${answer.length}`,
                 guesses,
                 board: next,
-                keyboard: {}
+                keyboard: {},
+                startedAt: existing?.startedAt ?? startedAt ?? Date.now(),
+                finishedAt: existing?.finishedAt
             })
         } else {
-            const prev = getFreeplayProgress(lang, wordLen) || {answer, guesses: [], board: [], keyboard: {}}
+            const existing = getFreeplayProgress(lang, wordLen)
+            const baseStarted = existing?.startedAt ?? startedAt ?? Date.now()
+            const prev = existing ? {...existing, startedAt: baseStarted} : {
+                answer,
+                guesses: [],
+                board: [],
+                keyboard: {},
+                startedAt: baseStarted
+            }
+            if (!prev.startedAt) prev.startedAt = Date.now()
             setFreeplayProgress(lang, wordLen, {...prev, guesses: [...prev.guesses, current], board: next})
         }
 
         // outcome + stats
         if (current === answer) {
             updateStats(mode, true)
-            setOutcome({type: 'win', answer})
+            const durationMs = startedAt ? Date.now() - startedAt : 0
+            setOutcome({type: 'win', answer, durationMs})
+            // persist finishedAt
+            if (mode === 'daily') {
+                const existing = getDailyProgress(today, lang, wordLen)
+                if (existing) setDailyProgress(today, lang, wordLen, {
+                    ...existing,
+                    finishedAt: existing.finishedAt ?? Date.now()
+                })
+            } else {
+                const existing = getFreeplayProgress(lang, wordLen)
+                if (existing) setFreeplayProgress(lang, wordLen, {
+                    ...existing,
+                    finishedAt: existing.finishedAt ?? Date.now()
+                })
+            }
         } else if (rowIdx + 1 >= MAX_ATTEMPTS) {
             updateStats(mode, false)
-            setOutcome({type: 'lose', answer})
+            const durationMs = startedAt ? Date.now() - startedAt : 0
+            setOutcome({type: 'lose', answer, durationMs})
+            if (mode === 'daily') {
+                const existing = getDailyProgress(today, lang, wordLen)
+                if (existing) setDailyProgress(today, lang, wordLen, {
+                    ...existing,
+                    finishedAt: existing.finishedAt ?? Date.now()
+                })
+            } else {
+                const existing = getFreeplayProgress(lang, wordLen)
+                if (existing) setFreeplayProgress(lang, wordLen, {
+                    ...existing,
+                    finishedAt: existing.finishedAt ?? Date.now()
+                })
+            }
         }
 
         setCurrent('')
-    }, [current, wordLen, answer, rows, lang, today, mode, validGuesses])
+    }, [current, wordLen, answer, rows, lang, today, mode, validGuesses, startedAt])
 
     const changeLength = useCallback(async (len: number) => {
         if (!allowed.includes(len)) return
@@ -161,11 +228,22 @@ export function useGame(lang: string, mode: GameMode = 'daily') {
             const a = await pickDailyWord(lang, len)
             setAnswer(a)
             freshBoard(len, setRows)
+            const now = Date.now();
+            setStartedAt(now)
+            setDailyProgress(getToday(), lang, len, { // new day context, safe
+                answerHash: `len:${a.length}`,
+                guesses: [],
+                board: [],
+                keyboard: {},
+                startedAt: now
+            })
         } else {
             const a = await pickRandomWord(lang, len)
             setAnswer(a)
             freshBoard(len, setRows)
-            setFreeplayProgress(lang, len, {answer: a, guesses: [], board: [], keyboard: {}})
+            const now = Date.now();
+            setStartedAt(now)
+            setFreeplayProgress(lang, len, {answer: a, guesses: [], board: [], keyboard: {}, startedAt: now})
         }
     }, [allowed, lang, mode])
 
@@ -177,7 +255,9 @@ export function useGame(lang: string, mode: GameMode = 'daily') {
         setCurrent('');
         setLetterStates({});
         setOutcome(null)
-        setFreeplayProgress(lang, wordLen, {answer: a, guesses: [], board: [], keyboard: {}})
+        const now = Date.now();
+        setStartedAt(now)
+        setFreeplayProgress(lang, wordLen, {answer: a, guesses: [], board: [], keyboard: {}, startedAt: now})
     }, [mode, lang, wordLen])
 
     const wordlistHref = useMemo(() => currentWordlistUrl(lang, wordLen, 'solutions'), [lang, wordLen])

@@ -75,6 +75,8 @@ describe('useGame hook', () => {
         await waitFor(() => ref.current.outcome !== null, 4000)
         expect(ref.current.outcome?.type).toBe('win')
         expect(ref.current.outcome?.answer).toBe('alpha')
+        expect(typeof ref.current.outcome?.durationMs).toBe('number')
+        expect(ref.current.outcome?.durationMs).toBeGreaterThanOrEqual(0)
         const stats = getStats()
         expect(stats.freeplay.wins).toBe(1)
         expect(stats.freeplay.gamesPlayed).toBe(1)
