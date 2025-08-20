@@ -1,12 +1,10 @@
-import {BrowserRouter, Link, Route, Routes} from "react-router";
+import {HashRouter, Link, Route, Routes} from "react-router";
 import ThemeSwitcher from "./components/ThemeSwitcher.tsx";
 import {useI18n} from './i18n/useI18n'
 import About from './screens/About'
 import App from './screens/App.tsx'
 import nav from './styles/Nav.module.less'
 import page from './styles/Page.module.less'
-
-const base = import.meta.env.BASE_URL || '/';
 
 function Nav() {
     const {t} = useI18n()
@@ -27,7 +25,7 @@ function Nav() {
 
 export default function AppRoutes() {
     return (
-        <BrowserRouter basename={base}>
+        <HashRouter>
             <div className={page.page}>
                 <Nav/>
                 <div className={page.content}>
@@ -37,6 +35,6 @@ export default function AppRoutes() {
                     </Routes>
                 </div>
             </div>
-        </BrowserRouter>
+        </HashRouter>
     )
 }

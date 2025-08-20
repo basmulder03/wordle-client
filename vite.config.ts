@@ -17,7 +17,7 @@ export default defineConfig({
         preprocessorOptions: {less: {javascriptEnabled: true}},
         modules: {localsConvention: 'camelCaseOnly'}
     },
-    base: '/wordle-client/',
+    base: '/wordle-client/#/',
     test: {
         environment: 'node',
         include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
